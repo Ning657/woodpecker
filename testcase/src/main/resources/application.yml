@@ -1,0 +1,145 @@
+spring:
+  application:
+    name: woodpecker
+  profiles:
+      active: 41
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+  datasource:
+    auto-test-db:
+      url: jdbc:mysql://localhost:3306/autotest?characterEncoding=utf-8&useSSL=false
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.jdbc.Driver
+    loandb:
+      url: jdbc:mysql://121.43.177.8:3344/loandb?characterEncoding=utf-8&useSSL=false
+      username: xujinjian
+      password: T5QJttqB2m
+      driver-class-name: com.mysql.jdbc.Driver
+    payment-db:
+      url: jdbc:mysql://121.43.177.8:3344/payment?characterEncoding=utf-8&useSSL=false
+      username: xujinjian
+      password: T5QJttqB2m
+      driver-class-name: com.mysql.jdbc.Driver
+  output:
+    ansi:
+      enabled: always
+  mail:
+      host: smtp.exmail.qq.com
+      username: xujinjian@treefinance.com.cn  #这里填你的公司邮箱
+      password: xxx #这里填你的公司邮箱密码
+      port: 25
+      default-encoding: UTF-8
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+              required: true
+            #ssl:
+            #  enable: true  #当port不是25时，则需启用这个配置
+  redis:
+    host: 121.43.177.8
+    port: 6379
+    password: dashu0701
+    timeout: 1000     #连接超时时间（毫秒）
+    database: 0       #Redis数据库索引（默认为0）
+    pool:
+      max-active: 2   #连接池最大连接数（使用负值表示没有限制）
+      max-wait: 100    #连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-idle: 2     #连接池中的最大空闲连接
+      min-idle: 1     #连接池中的最小空闲连接
+#####################自动化测试配置#####################
+autotest:
+  api:
+    enable: true  #是否启用接口自动化
+    maxConnectionNum: 1
+    maxPerRoute: 1
+    socketTimeout: 30000
+    connectTimeout: 10000
+    connectionRequestTimeout: 5000
+    retryTimes: 3
+    keepAliveTimeOut: 60000
+    idleTimeout: 30
+    taskTimer: 30
+    redirectsEnabled: true  #是否允许自动重定向，默认true
+  ui:
+    driverPath: src/main/resources/driver/chromedriver
+    enable: true  #是否启用selenium
+    driverType: Chrome  #浏览器类型
+    pageLoadTimeout: 45  #页面加载超时时间(秒)
+    elementLoadTimeout: 15  #元素加载超时时间(秒)
+    enableBrowserScreenshot: true   #是否启用测试用例失败时，对浏览器截图，默认true
+    enableDesktopScreenshot: false  #是否启用测试用例失败时，对桌面截图，默认false
+    screenshotDir: screenshot  #截图文件存放目录
+    screenshotImageType: JPEG   #截图文件图片格式
+  infoOperationLogFilePath: infoOperationLog.txt  #自动化运行时，一些重要操作日志，会记录到这个文件中
+  default-encoding: UTF-8   #编码
+#####################日志配置#####################
+logging:
+  level:
+    root: info
+    org:
+      hibernate: error
+      springframework: error
+    com:
+      sword:
+        autotest:
+          framework: info
+      xujinjian: info
+      woodpecker: debug
+#####################测试报告/结果配置#####################
+report:
+  notice:
+    enable: true  #测试结束后，是否邮件通知
+    mail:
+      to: xujinjian@treefinance.com.cn  #需要邮件通知的人，多个收件人中间用;隔开
+      #cc: xxx@qq.com  #需要邮件通知的人，多个抄送人中间用;隔开
+  reportng:
+    html:
+      img:
+        hight: 100
+        width: 100
+#####################MQ配置#####################
+rocketmq:
+  ###producer
+  producer:
+    isOnOff: on #是否启用生产者
+    groupName: ${spring.application.name}  #发送同一类消息的设置为同一个group，保证唯一,默认不需要设置，rocketmq会使用ip@pid(pid代表jvm名字)作为唯一标示
+    namesrvAddr: 127.0.0.1:9876 #mq的nameserver地址
+    maxMessageSize: 4194304  #消息最大长度 默认1024*4(4M)
+    sendMsgTimeout: 3000  #发送消息超时时间,默认3000
+    retryTimesWhenSendFailed: 2 #发送消息失败重试次数，默认2
+  ###consumer
+  consumer:
+    isOnOff: on #是否启用消费者
+    groupName: ${spring.application.name} #发送同一类消息的设置为同一个group，保证唯一,默认不需要设置，rocketmq会使用ip@pid(pid代表jvm名字)作为唯一标示
+    namesrvAddr: 127.0.0.1:9876 #mq的nameserver地址
+    topics: DemoTopic~*;  #该消费者订阅的主题和tags("*"号表示订阅该主题下所有的tags),格式：topic~tag1||tag2||tag3;topic2~*;
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    consumeMessageBatchMaxSize: 1 #设置一次消费消息的条数，默认为1条
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

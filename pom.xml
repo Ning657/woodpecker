@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+  <modules>
+    <module>testcase</module>
+    <module>dao</module>
+    <module>commons</module>
+    <module>service</module>
+    <module>page</module>
+  </modules>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.19.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  <groupId>com.woodpecker</groupId>
+  <artifactId>woodpecker</artifactId>
+  <version>1.0.1</version>
+  <name>woodpecker</name>
+  <description>接口/WEB-UI自动化测试</description>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <argLine>-Dfile.encoding=UTF-8</argLine>
+    <!--  -->
+    <sword.version>2.0</sword.version>
+    <!--  -->
+    <woodpecker.version>1.0.1</woodpecker.version>
+    <!--  -->
+    <mysql.version>5.1.46</mysql.version>
+    <!-- jackson -->
+    <jackson.version>2.9.8</jackson.version>
+    <!-- rocketmq -->
+    <rocketmq.version>3.5.9</rocketmq.version>
+  </properties>
+
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- testcase -->
+      <dependency>
+        <groupId>com.woodpecker</groupId>
+        <artifactId>testcase</artifactId>
+        <version>${woodpecker.version}</version>
+      </dependency>
+
+      <!-- dao -->
+      <dependency>
+        <groupId>com.woodpecker</groupId>
+        <artifactId>dao</artifactId>
+        <version>${woodpecker.version}</version>
+      </dependency>
+
+      <!-- commons -->
+      <dependency>
+        <groupId>com.woodpecker</groupId>
+        <artifactId>commons</artifactId>
+        <version>${woodpecker.version}</version>
+      </dependency>
+
+      <!-- service -->
+      <dependency>
+        <groupId>com.woodpecker</groupId>
+        <artifactId>service</artifactId>
+        <version>${woodpecker.version}</version>
+      </dependency>
+
+      <!-- page -->
+      <dependency>
+        <groupId>com.woodpecker</groupId>
+        <artifactId>page</artifactId>
+        <version>${woodpecker.version}</version>
+      </dependency>
+
+
+      <!-- sword - commons -->
+      <dependency>
+        <groupId>com.sword</groupId>
+        <artifactId>commons</artifactId>
+        <version>${sword.version}</version>
+      </dependency>
+
+      <!-- sword - auto-test -->
+      <dependency>
+        <groupId>com.sword</groupId>
+        <artifactId>auto-test</artifactId>
+        <version>${sword.version}</version>
+      </dependency>
+
+      <!-- sword - web-controller -->
+      <dependency>
+        <groupId>com.sword</groupId>
+        <artifactId>web-controller</artifactId>
+        <version>${sword.version}</version>
+      </dependency>
+
+
+      <!-- mysql -->
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.version}</version>
+      </dependency>
+
+
+      <!-- jackson-databind -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <!-- jackson-core -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <!-- jackson-annotations -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- rocketmq -->
+      <dependency>
+        <groupId>com.alibaba.rocketmq</groupId>
+        <artifactId>rocketmq-client</artifactId>
+        <version>${rocketmq.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

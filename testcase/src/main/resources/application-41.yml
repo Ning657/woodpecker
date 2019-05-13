@@ -1,0 +1,21 @@
+﻿testcase:
+  userId: 2003100155
+databuild:
+  host: http://data-build.test.91gfd.cn
+loan-clearing:
+  new:
+    host: http://clearing-gateway.test.91gfd.cn
+  old:
+    host: http://loan-clearing41.test.91gfd.cn
+payment:
+  trade:
+    host: http://trade1_9.test.91gfd.cn
+accounting:
+  host: http://accounting41.test.91gfd.cn
+superdiamond:
+  host: http://superdiamond.wangxin.test.91gfd.cn
+  account:
+    userCode: admin
+    password: '000000'
+mq:
+  host: http://mq.wangxin.test.91gfd.cn
