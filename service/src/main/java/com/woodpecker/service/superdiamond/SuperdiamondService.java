@@ -69,4 +69,23 @@ public interface SuperdiamondService {
       boolean deleteLastChar, String separator);
 
 
+  /**
+   * 方法功能描述: 判断配置值是否存在
+   *
+   * @param configKey key
+   * @param configValue value
+   * @param ignoreCase 是否忽略大小写
+   * @return boolean
+   */
+  boolean configIsExist(String configKey, String configValue, boolean ignoreCase);
+
+
+  /**
+   * 方法功能描述: 返回首页
+   *
+   * @return void
+   */
+  void gotoIndexPage();
+
+
 }

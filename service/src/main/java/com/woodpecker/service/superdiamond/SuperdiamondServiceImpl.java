@@ -252,10 +252,89 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
     //输入配置值
     projectProfilesPageObject
         .inputConfigValue(configKey, configValue, append, deleteLastChar, separator);
-    //点击保存
-    projectProfilesPageObject.clickSaveConfigBtn();
     result = true;
+    //返回首页
+    gotoIndexPage();
     return result;
+  }
+
+
+  /**
+   * 方法功能描述: 判断配置值是否存在
+   *
+   * @param configKey key
+   * @param configValue value
+   * @param ignoreCase 是否忽略大小写
+   * @return boolean
+   */
+  @Override
+  public boolean configIsExist(String configKey, String configValue, boolean ignoreCase) {
+    boolean result = false;
+    logger.debug("判断配置值是否存在configKey=[{}];configValue=[{}]", configKey, configValue);
+    if (StringUtil.isEmpty(configKey) || StringUtil.isEmpty(configValue)) {
+      logger.error("configKey或configValue不能为空");
+      return result;
+    }
+    //循环查找key
+    boolean isExistKey = false;
+    for (int i = 0; i < 30; i++) {
+      //判断当前页是否存在key
+      boolean flag = projectProfilesPageObject.isExistKey(configKey);
+      if (flag) {
+        //当前页存在这个key
+        isExistKey = true;
+        break;
+      }
+      logger.debug("当前页不存在configKey=[{}]配置项", configKey);
+      //判断是否有下一页
+      boolean f1 = projectProfilesPageObject.isExistNextPageBtn();
+      if (f1) {
+        //还有下一页
+        //点击下一页按钮
+        projectProfilesPageObject.clickNextPageBtn();
+        ThreadUtil.sleep();
+      } else {
+        //最后一页了，还是找不到key
+        break;
+      }
+    }
+    if (!isExistKey) {
+      //如果没有这个key，则直接返回
+      logger.error("不存在configKey=[{}]配置项", configKey);
+      return result;
+    }
+    //点击修改按钮
+    projectProfilesPageObject.clickUpdateConfigBtn(configKey);
+    //获取配置值
+    String value = projectProfilesPageObject.getConfigValue(configKey);
+    logger.debug("读取到的配置值为[{}]", value);
+    if (null != value) {
+      //是否忽略大小写
+      if (ignoreCase) {
+        //判断值是否存在
+        result = StringUtil.containsIgnoreCase(value, configValue);
+      } else {
+        //判断值是否存在
+        result = StringUtil.contains(value, configValue);
+      }
+    }
+    //点击关闭按钮
+    projectProfilesPageObject.clickCloseBtn();
+    //返回首页
+    gotoIndexPage();
+    return result;
+  }
+
+
+  /**
+   * 方法功能描述: 返回首页
+   *
+   * @return void
+   */
+  @Override
+  public void gotoIndexPage() {
+    //点击首页按钮
+    projectProfilesPageObject.clickIndexPageBtn();
   }
 
 

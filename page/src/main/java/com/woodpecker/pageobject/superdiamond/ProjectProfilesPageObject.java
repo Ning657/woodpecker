@@ -5,6 +5,9 @@ import com.xujinjian.Commons.Lang.StringUtil;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import javax.annotation.PostConstruct;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.sword.selenium3.PageObjectFactory;
 
 /**
@@ -30,6 +33,12 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
    * 添加Module按钮
    */
   By addModuleBtn = By.id("addModule");
+
+  /**
+   * 首页按钮
+   */
+  @FindBy(xpath = "//a[@href='/superdiamond/index']")
+  WebElement indexBtn;
 
 
   /**
@@ -122,8 +131,28 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
   public void clickUpdateConfigBtn(String key) {
     String xpath = "//tbody/tr/td[@value='" + key + "']/following-sibling::td/a[@title='更新']";
     By updateConfigBtn = By.xpath(xpath);
-    webElementManager.clickUntilDisplayed(updateConfigBtn);
+    webElementManager.clickUntilClickable(updateConfigBtn);
   }
+
+
+  /**
+   * 方法功能描述: 获取配置值
+   *
+   * @param configKey key
+   * @return java.lang.String
+   */
+  public String getConfigValue(String configKey) {
+    By configKeyInput = By.id("config-configKey");
+    By configValueInput = By.id("config-configValue");
+    String value = webElementManager.getValueUntilExist(configKeyInput);
+    if (StringUtil.equals(configKey, value)) {
+      //读取出内容
+      return webElementManager.getValueUntilExist(configValueInput);
+    } else {
+      return null;
+    }
+  }
+
 
 
   /**
@@ -140,16 +169,15 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
       boolean deleteLastChar, String separator) {
     By configKeyInput = By.id("config-configKey");
     By configValueInput = By.id("config-configValue");
-    String value = webElementManager.getValue(configKeyInput);
+    String value = webElementManager.getValueUntilExist(configKeyInput);
     if (StringUtil.equals(configKey, value)) {
       //先读取出原内容
-      String oldConfigValue = webElementManager.getValue(configValueInput);
+      String oldConfigValue = webElementManager.getValueUntilExist(configValueInput);
       log.debug("oldConfigValue=[{}]", oldConfigValue);
       //判断配置值是否已经存在
       int index = oldConfigValue.indexOf(configValue);
       if (index >= 0) {
         log.debug("配置configValue=[{}]已经存在，不重复添加", configValue);
-        ThreadUtil.sleep();
         //点击关闭按钮
         clickCloseBtn();
         return;
@@ -180,6 +208,8 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
         //修改了配置中心配置，应该做记录，防止配置修改错误，可以回滚
         saveOperLog(OperationTypeEnum.UPDATE, configValue, oldConfigValue);
       }
+      //点击保存
+      clickSaveConfigBtn();
     }
   }
 
@@ -191,7 +221,12 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
    */
   public void clickCloseBtn() {
     String xpath = "//button[@id='saveConfig']/parent::div/button[text()='关闭']";
-    webElementManager.clickUntilDisplayed(By.xpath(xpath));
+    try {
+      webElementManager.clickUntilClickable(By.xpath(xpath));
+    } catch (ElementClickInterceptedException e) {
+      ThreadUtil.sleep();
+      webElementManager.clickUntilDisplayed(By.xpath(xpath));
+    }
   }
 
 
@@ -274,6 +309,21 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
    */
   public void clickPreviousPageBtn() {
     webElementManager.click(getPreviousPageBtn());
+  }
+
+
+  /**
+   * 方法功能描述: 点击首页按钮
+   *
+   * @return void
+   */
+  public void clickIndexPageBtn() {
+    try {
+      webElementManager.clickUntilClickable(indexBtn);
+    } catch (ElementClickInterceptedException e) {
+      ThreadUtil.sleep();
+      webElementManager.clickUntilDisplayed(indexBtn);
+    }
   }
 
 

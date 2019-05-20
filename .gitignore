@@ -39,6 +39,7 @@ target/
 */*.iws
 */api-doc
 */lib
+/api-doc/
 
 
 # Compiled class file

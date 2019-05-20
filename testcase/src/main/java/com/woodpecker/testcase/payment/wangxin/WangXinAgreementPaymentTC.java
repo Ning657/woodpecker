@@ -47,7 +47,11 @@ public class WangXinAgreementPaymentTC extends PaymentTestCase {
         //superdiamondService.selectModule("MOCK");
 
         String configKey = "transaction.tran.mock.platforms";
-        String configValue = "\"JDAGREEMENTPAY2\"";
+        String configValue = "\"JDAGREEMENTPAY\"";
+
+//        boolean configIsExist = superdiamondService.configIsExist(configKey, configValue, true);
+//        log.info("configIsExist=[{}]", configIsExist);
+
         boolean append = true;
         boolean deleteLastChar = true;
         String separator = ",";
