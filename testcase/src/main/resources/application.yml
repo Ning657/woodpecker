@@ -97,7 +97,7 @@ logging:
 #####################测试报告/结果配置#####################
 report:
   notice:
-    enable: true  #测试结束后，是否邮件通知
+    enable: false  #测试结束后，是否邮件通知
     mail:
       to: xujinjian@treefinance.com.cn  #需要邮件通知的人，多个收件人中间用;隔开
       #cc: xxx@qq.com  #需要邮件通知的人，多个抄送人中间用;隔开

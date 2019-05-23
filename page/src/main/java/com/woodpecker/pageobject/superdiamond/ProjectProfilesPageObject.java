@@ -154,6 +154,57 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
   }
 
 
+  /**
+   * 方法功能描述: 设置配置值
+   *
+   * @param configValue value
+   * @return void
+   */
+  public void setConfigValue(String configValue) {
+    By configValueInput = By.id("config-configValue");
+    String oldConfigValue = webElementManager.getValueUntilExist(configValueInput);
+    webElementManager.inputUntilDisplayed(configValueInput, configValue);
+    waitInputEnd(configValue);
+    //修改了配置中心配置，应该做记录，防止配置修改错误，可以回滚
+    saveOperLog(OperationTypeEnum.UPDATE, configValue, oldConfigValue);
+  }
+
+
+  /**
+   * 方法功能描述: 删除配置
+   *
+   * @param configKey key
+   * @param configValue value
+   * @return void
+   */
+  public void delConfigValue(String configKey, String configValue) {
+    By configKeyInput = By.id("config-configKey");
+    By configValueInput = By.id("config-configValue");
+    String value = webElementManager.getValueUntilExist(configKeyInput);
+    if (StringUtil.equals(configKey, value)) {
+      //先读取出原内容
+      String oldConfigValue = webElementManager.getValueUntilExist(configValueInput);
+      log.debug("oldConfigValue=[{}]", oldConfigValue);
+      //判断配置值是否存在
+      int index = oldConfigValue.indexOf(configValue);
+      if (index == -1) {
+        log.debug("配置configValue=[{}]不存在，不需要删除", configValue);
+        //点击关闭按钮
+        clickCloseBtn();
+        return;
+      }
+      String newConfigValue = oldConfigValue.replaceAll(configValue, "");
+      log.debug("newConfigValue=[{}]", newConfigValue);
+      //输入
+      webElementManager.inputUntilDisplayed(configValueInput, newConfigValue);
+      waitInputEnd(newConfigValue);
+      //修改了配置中心配置，应该做记录，防止配置修改错误，可以回滚
+      saveOperLog(OperationTypeEnum.DELETE, newConfigValue, oldConfigValue);
+      //点击保存
+      clickSaveConfigBtn();
+    }
+  }
+
 
   /**
    * 方法功能描述: 输入配置值(如果添加配置值，已经存在，则不会重复添加)

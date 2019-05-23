@@ -56,7 +56,7 @@ public interface SuperdiamondService {
 
 
   /**
-   * 方法功能描述: 更新配置
+   * 方法功能描述: 添加配置
    *
    * @param configKey key
    * @param configValue value
@@ -65,7 +65,7 @@ public interface SuperdiamondService {
    * @param separator 跟原内容之间的分隔符(当追加内容时，一般需要有个分隔符隔开)
    * @return boolean
    */
-  boolean updateConfig(String configKey, String configValue, boolean append,
+  boolean addConfig(String configKey, String configValue, boolean append,
       boolean deleteLastChar, String separator);
 
 
@@ -86,6 +86,16 @@ public interface SuperdiamondService {
    * @return void
    */
   void gotoIndexPage();
+
+
+  /**
+   * 方法功能描述: 删除配置
+   *
+   * @param configKey key
+   * @param configValue 需要删除的配置值，只会删传的这个值，别的值不会删
+   * @return boolean
+   */
+  boolean deleteConfig(String configKey, String configValue);
 
 
 }

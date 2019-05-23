@@ -4,6 +4,7 @@ import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * 接口描述:〈t_repayment_schedule表dao〉
@@ -22,8 +23,22 @@ public interface RepaymentScheduleDao extends JpaRepository<RepaymentScheduleEnt
 
   List<RepaymentScheduleEntity> findByLoanOrderIdAndStatus(Integer LoanOrderId, Byte status);
 
-  List<RepaymentScheduleEntity> findByLoanOrderIdAndStage(Integer loanOrderId, Byte stage);
+  RepaymentScheduleEntity findByLoanOrderIdAndStage(Integer loanOrderId, Byte stage);
 
   List<RepaymentScheduleEntity> findByLoanOrderIdAndIsClear(Integer loanOrderId, Byte isClear);
+
+  @Query(value = "select * from t_repayment_schedule where LoanOrderId=? and Stage<?", nativeQuery = true)
+  List<RepaymentScheduleEntity> queryBeforeStageRepaymentSchedules(Integer loanOrderId, Byte stage);
+
+  @Query(value = "select * from t_repayment_schedule where LoanOrderId=? and Stage<=?", nativeQuery = true)
+  List<RepaymentScheduleEntity> queryBeforeContainsStageRepaymentSchedules(Integer loanOrderId,
+      Byte stage);
+
+  @Query(value = "select * from t_repayment_schedule where LoanOrderId=? and Stage>?", nativeQuery = true)
+  List<RepaymentScheduleEntity> queryAfterStageRepaymentSchedules(Integer loanOrderId, Byte stage);
+
+  @Query(value = "select * from t_repayment_schedule where LoanOrderId=? and Stage>=?", nativeQuery = true)
+  List<RepaymentScheduleEntity> queryAfterContainsStageRepaymentSchedules(Integer loanOrderId,
+      Byte stage);
 
 }

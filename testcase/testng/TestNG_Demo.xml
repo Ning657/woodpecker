@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="demo" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="demo">
+    <classes>
+      <class name="com.woodpecker.testcase.demo.A"></class>
+      <class name="com.woodpecker.testcase.demo.B"></class>
+      <class name="com.woodpecker.testcase.demo.C"></class>
+    </classes>
+  </test>
+</suite>

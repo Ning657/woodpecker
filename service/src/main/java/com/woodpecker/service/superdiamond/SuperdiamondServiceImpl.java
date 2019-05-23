@@ -201,7 +201,7 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
 
 
   /**
-   * 方法功能描述: 更新配置
+   * 方法功能描述: 添加配置
    *
    * @param configKey key
    * @param configValue value
@@ -211,10 +211,10 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
    * @return boolean
    */
   @Override
-  public boolean updateConfig(String configKey, String configValue, boolean append,
+  public boolean addConfig(String configKey, String configValue, boolean append,
       boolean deleteLastChar, String separator) {
     boolean result = false;
-    logger.debug("更新配置configKey=[{}];configValue=[{}]", configKey, configValue);
+    logger.debug("添加配置configKey=[{}];configValue=[{}]", configKey, configValue);
     if (StringUtil.isEmpty(configKey) || StringUtil.isEmpty(configValue)) {
       logger.error("configKey或configValue不能为空");
       return result;
@@ -335,6 +335,60 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
   public void gotoIndexPage() {
     //点击首页按钮
     projectProfilesPageObject.clickIndexPageBtn();
+  }
+
+
+  /**
+   * 方法功能描述: 删除配置
+   *
+   * @param configKey key
+   * @param configValue 需要删除的配置值，只会删传的这个值，别的值不会删
+   * @return boolean
+   */
+  @Override
+  public boolean deleteConfig(String configKey, String configValue) {
+    boolean result = false;
+    logger.debug("删除配置configKey=[{}];configValue=[{}]", configKey, configValue);
+    if (StringUtil.isEmpty(configKey) || StringUtil.isEmpty(configValue)) {
+      logger.error("configKey或configValue不能为空");
+      return result;
+    }
+    //循环查找key
+    boolean isExistKey = false;
+    for (int i = 0; i < 30; i++) {
+      //判断当前页是否存在key
+      boolean flag = projectProfilesPageObject.isExistKey(configKey);
+      if (flag) {
+        //当前页存在这个key
+        isExistKey = true;
+        break;
+      }
+      logger.debug("当前页不存在configKey=[{}]配置项", configKey);
+      //判断是否有下一页
+      boolean f1 = projectProfilesPageObject.isExistNextPageBtn();
+      if (f1) {
+        //还有下一页
+        //点击下一页按钮
+        projectProfilesPageObject.clickNextPageBtn();
+        ThreadUtil.sleep();
+      } else {
+        //最后一页了，还是找不到key
+        break;
+      }
+    }
+    if (!isExistKey) {
+      //如果没有这个key，则直接返回
+      logger.error("不存在configKey=[{}]配置项", configKey);
+      return result;
+    }
+    //点击修改按钮
+    projectProfilesPageObject.clickUpdateConfigBtn(configKey);
+    //删除配置
+    projectProfilesPageObject.delConfigValue(configKey, configValue);
+    result = true;
+    //返回首页
+    gotoIndexPage();
+    return result;
   }
 
 

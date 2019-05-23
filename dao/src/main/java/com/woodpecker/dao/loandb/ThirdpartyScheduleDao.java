@@ -28,4 +28,5 @@ public interface ThirdpartyScheduleDao extends JpaRepository<ThirdpartyScheduleE
 
   ThirdpartyScheduleEntity findByScheduleId(Integer scheduleId);
 
+  
 }

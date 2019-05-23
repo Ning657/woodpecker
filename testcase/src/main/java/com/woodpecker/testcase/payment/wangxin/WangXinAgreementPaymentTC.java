@@ -56,7 +56,7 @@ public class WangXinAgreementPaymentTC extends PaymentTestCase {
         boolean deleteLastChar = true;
         String separator = ",";
         boolean updateSuccess = superdiamondService
-            .updateConfig(configKey, configValue, append, deleteLastChar, separator);
+            .addConfig(configKey, configValue, append, deleteLastChar, separator);
         log.info("updateSuccess=[{}]", updateSuccess);
 
         ThreadUtil.sleep(3);

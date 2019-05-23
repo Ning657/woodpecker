@@ -17,51 +17,51 @@ import org.testng.annotations.Test;
  * @author: jinjianxu
  * @since: 1.0
  */
-public class A extends TestCase {
+public class B extends TestCase {
 
   @BeforeSuite
   public void beforeSutie() {
-    System.out.println("A BeforeSuite");
+    System.out.println("B BeforeSuite");
   }
 
   @BeforeTest
   public void beforeTest() {
-    System.out.println("A BeforeTest");
+    System.out.println("B BeforeTest");
   }
 
   @BeforeClass
   public void beforeClass() {
-    System.out.println("A BeforeClass");
+    System.out.println("B BeforeClass");
   }
 
   @BeforeMethod
   public void beforeMethod() {
-    System.out.println("A BeforeMethod");
+    System.out.println("B BeforeMethod");
   }
 
   @Test
   public void test() {
-    System.out.println("A Test");
+    System.out.println("B Test");
   }
 
   @AfterSuite
   public void afterSutie() {
-    System.out.println("A AfterSuite");
+    System.out.println("B AfterSuite");
   }
 
   @AfterTest
   public void afterTest() {
-    System.out.println("A AfterTest");
+    System.out.println("B AfterTest");
   }
 
   @AfterClass
   public void afterClass() {
-    System.out.println("A AfterClass");
+    System.out.println("B AfterClass");
   }
 
   @AfterMethod
   public void afterMethod() {
-    System.out.println("A AfterMethod");
+    System.out.println("B AfterMethod");
   }
 
 }
