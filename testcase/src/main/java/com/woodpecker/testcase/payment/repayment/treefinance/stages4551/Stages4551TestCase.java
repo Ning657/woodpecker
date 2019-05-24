@@ -4,10 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sword.autotest.framework.assertion.Validate;
 import com.sword.autotest.framework.exception.TestCaseException;
+import com.woodpecker.dao.loandb.BankAccountDao;
+import com.woodpecker.dao.loandb.LoanOrderDao;
 import com.woodpecker.dao.loandb.RepaymentScheduleDao;
 import com.woodpecker.dao.loandb.TradeOrderDao;
+import com.woodpecker.dao.payment.PayChannelBankDao;
+import com.woodpecker.entity.loandb.BankAccountEntity;
+import com.woodpecker.entity.loandb.LoanOrderEntity;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.entity.loandb.TradeOrderEntity;
+import com.woodpecker.entity.payment.PayChannelBankEntity;
 import com.woodpecker.pageobject.superdiamond.ProjectProfilesPageObject;
 import com.woodpecker.service.config.Account;
 import com.woodpecker.service.payment.trade.RepaymentFactory;
@@ -49,6 +55,16 @@ public class Stages4551TestCase extends PaymentTestCase {
 
   @Autowired
   protected MQService mqService;
+
+  @Autowired
+  protected PayChannelBankDao payChannelBankDao;
+
+  @Autowired
+  protected LoanOrderDao loanOrderDao;
+
+  @Autowired
+  protected BankAccountDao bankAccountDao;
+
 
   /**
    * 还款成功后的MQ的topic
@@ -92,6 +108,8 @@ public class Stages4551TestCase extends PaymentTestCase {
     boolean updateSuccess = superdiamondService
         .addConfig(configKey, configValue, append, deleteLastChar, separator);
     Assert.assertTrue(updateSuccess, "校验指定用户的支付渠道为指定渠道是否成功");
+    //修改配置中心后，暂停几秒，等待配置生效
+    ThreadUtil.sleep(sleepTime);
   }
 
 
@@ -180,9 +198,31 @@ public class Stages4551TestCase extends PaymentTestCase {
       //直接点击「关闭」按钮
       projectProfilesPageObject.clickCloseBtn();
     }
-    ThreadUtil.sleep();
     //返回首页
     superdiamondService.gotoIndexPage();
+    //修改配置中心后，暂停几秒，等待配置生效
+    ThreadUtil.sleep(sleepTime);
+  }
+
+
+  /**
+   * 方法功能描述: 校验t_tp_trade_order表数据
+   *
+   * @param tradeNo tradeNo
+   * @param userId userId
+   * @param amount amount
+   * @param isDeprecated isDeprecated
+   * @return void
+   */
+  public void checkTradeOrder(String tradeNo, Integer userId, BigDecimal amount,
+      Byte isDeprecated) {
+    //根据TradeNo查找t_tp_trade_order表的记录
+    TradeOrderEntity tradeOrderEntity = tradeOrderDao.findByTradeNo(tradeNo);
+    Assert.assertNotNull(tradeOrderEntity, "校验是否生成了t_tp_trade_order记录");
+    Validate.isEquals(userId, tradeOrderEntity.getUserId(), "校验userId是否正确");
+    Validate
+        .isEquals(amount.doubleValue(), tradeOrderEntity.getAmount().doubleValue(), "校验amount是否正确");
+    Validate.isEquals(isDeprecated, tradeOrderEntity.getIsDeprecated(), "校验isDeprecated是否正确");
   }
 
 
@@ -208,6 +248,7 @@ public class Stages4551TestCase extends PaymentTestCase {
         .isEquals(amount.doubleValue(), tradeOrderEntity.getAmount().doubleValue(), "校验amount是否正确");
     Validate.isEquals(payWay, tradeOrderEntity.getPayWay(), "校验payWay是否正确");
     Validate.isEquals(payPlatform, tradeOrderEntity.getPayPlatform(), "校验payPlatform是否正确");
+    Validate.isEquals(2, tradeOrderEntity.getTranStatus(), "校验TranStatus是否正确");
     Validate.isEquals(channel, tradeOrderEntity.getChannel(), "校验channel是否正确");
     Validate.isEquals(isDeprecated, tradeOrderEntity.getIsDeprecated(), "校验isDeprecated是否正确");
   }
@@ -264,6 +305,92 @@ public class Stages4551TestCase extends PaymentTestCase {
     Byte status = repaymentScheduleEntity.getStatus();
     Validate.isEquals(1, isClear, "校验t_repayment_schedule表的IsClear是否为1");
     Validate.isEquals(11, status, "校验t_repayment_schedule表的Status是否为11");
+  }
+
+
+  /**
+   * 方法功能描述: 获取BankId
+   *
+   * @param loanOrderId loanOrderId
+   * @return java.lang.Integer
+   */
+  public Integer getBankId(Integer loanOrderId) {
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
+    Long bankAccountId = loanOrderEntity.getBankAccountId();
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue());
+    return bankAccountEntity.getBankId();
+  }
+
+
+  /**
+   * 方法功能描述: 获取银行日限额
+   *
+   * @param code bankId
+   * @param payChannelCode payChannelCode
+   * @return java.lang.Integer
+   */
+  public Integer getDayAmountLimit(String code, String payChannelCode) {
+    PayChannelBankEntity payChannelBankEntity = payChannelBankDao
+        .findByCodeAndPayChannelCodeAndVersion(code, payChannelCode, "test");
+    return payChannelBankEntity.getDayAmount();
+  }
+
+
+  /**
+   * 方法功能描述: 设置银行日限额
+   *
+   * @param code bankId
+   * @param dayAmount 日限额
+   * @param payChannelCode payChannelCode
+   * @return com.woodpecker.entity.payment.PayChannelBankEntity
+   */
+  public PayChannelBankEntity setDayAmountLimit(String code, Integer dayAmount,
+      String payChannelCode) {
+    PayChannelBankEntity payChannelBankEntity = payChannelBankDao
+        .findByCodeAndPayChannelCodeAndVersion(code, payChannelCode, "test");
+    payChannelBankEntity.setDayAmount(dayAmount);
+    return payChannelBankDao.save(payChannelBankEntity);
+  }
+
+
+  /**
+   * 方法功能描述: mock支付渠道
+   *
+   * @param payChannel 支付渠道
+   * @return void
+   */
+  public void mockChannel(String payChannel) {
+    String userName = account.getSdUserCode();
+    String password = account.getSdPassword();
+    Assert.assertNotNull(userName, "校验登录Superdiamond的账号是否为空");
+    Assert.assertNotNull(password, "校验登录Superdiamond的密码是否为空");
+    //打开Superdiamond登录页面
+    superdiamondService.openSuperdiamond();
+    //登录superdiamond
+    boolean loginResult = superdiamondService.login(userName, password);
+    Assert.assertTrue(loginResult, "校验登录Superdiamond是否成功");
+    //搜索tp-payment-transaction项目的配置
+    String projectName = "tp-payment-transaction";
+    boolean isExistProject = superdiamondService.search(projectName);
+    Assert.assertTrue(isExistProject, "校验是否搜索到项目" + projectName);
+    //点击Profiles --> development
+    String profiles = "development";
+    boolean isProjectPage = superdiamondService.gotoProject(projectName, profiles);
+    Assert.assertTrue(isProjectPage, "校验是否进入到tp-payment-transaction项目的development配置");
+    //选择Module --> MOCK
+    String moduleName = "MOCK";
+    superdiamondService.selectModule(moduleName);
+    //新增配置，mock指定支付渠道
+    String configKey = "transaction.tran.mock.platforms";
+    String configValue = "\"" + payChannel + "\"";
+    boolean append = true;
+    boolean deleteLastChar = true;
+    String separator = ",";
+    boolean updateSuccess = superdiamondService
+        .addConfig(configKey, configValue, append, deleteLastChar, separator);
+    Assert.assertTrue(updateSuccess, "校验指定用户的支付渠道为指定渠道是否成功");
+    //修改配置中心后，暂停几秒，等待配置生效
+    ThreadUtil.sleep(sleepTime);
   }
 
 

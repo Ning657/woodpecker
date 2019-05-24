@@ -91,8 +91,8 @@ logging:
     com:
       sword:
         autotest:
-          framework: info
-      xujinjian: info
+          framework: error
+      xujinjian: error
       woodpecker: debug
 #####################测试报告/结果配置#####################
 report:

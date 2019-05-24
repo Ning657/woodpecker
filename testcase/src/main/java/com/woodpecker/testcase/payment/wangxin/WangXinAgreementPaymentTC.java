@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
  * @since: 1.0
  */
 public class WangXinAgreementPaymentTC extends PaymentTestCase {
-
+  
   @Autowired
   private Account account;
 

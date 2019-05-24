@@ -4,6 +4,7 @@ import com.woodpecker.service.databuild.DataBuildOrderService;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.service.payment.cache.RedisCacheFactory;
 import com.woodpecker.testcase.TestCase;
+import com.xujinjian.Commons.Lang.ThreadUtil;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,16 @@ public class PaymentTestCase extends TestCase {
 
   @Autowired
   protected RedisCacheFactory redisCacheFactory;
+
+  /**
+   * 常规的等待时间，3秒
+   */
+  protected int sleepTime = 3;
+
+  /**
+   * Redis删除后等待的时间，6秒
+   */
+  protected int redisSleepTime = 6;
 
 
   /**
@@ -75,6 +86,8 @@ public class PaymentTestCase extends TestCase {
    */
   public void cleanRedis() {
     redisCacheFactory.delete();
+    //删除缓存后，暂停几秒，等待生效
+    ThreadUtil.sleep(redisSleepTime);
   }
 
 

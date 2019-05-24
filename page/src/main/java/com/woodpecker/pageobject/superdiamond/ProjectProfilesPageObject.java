@@ -132,6 +132,7 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
     String xpath = "//tbody/tr/td[@value='" + key + "']/following-sibling::td/a[@title='更新']";
     By updateConfigBtn = By.xpath(xpath);
     webElementManager.clickUntilClickable(updateConfigBtn);
+    ThreadUtil.sleep();
   }
 
 
@@ -277,6 +278,8 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
     } catch (ElementClickInterceptedException e) {
       ThreadUtil.sleep();
       webElementManager.clickUntilDisplayed(By.xpath(xpath));
+    } finally {
+      ThreadUtil.sleep();
     }
   }
 
@@ -288,6 +291,7 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
    */
   public void clickSaveConfigBtn() {
     webElementManager.clickUntilDisplayed(By.id("saveConfig"));
+    ThreadUtil.sleep();
   }
 
 
@@ -298,6 +302,7 @@ public class ProjectProfilesPageObject extends SuperdiamondBasePageObject {
    */
   public void clickSaveConfigExtBtn() {
     webElementManager.clickUntilDisplayed(By.id("saveConfigExt"));
+    ThreadUtil.sleep();
   }
 
 
