@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="当期还款走资金渠道体内还款" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="当期还款走资金渠道体内还款">
+    <classes>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.capital.bohai.BoHaiCapitalTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.capital.mnw.MnwCapitalTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.capital.ssj.SsjCapitalTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.capital.xizang.XiZangCapitalTC"/>
+    </classes>
+  </test>
+</suite>
