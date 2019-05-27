@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 类描述:〈数据解析Service，包含加解密等功能〉
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @author: jinjianxu
  * @since: 1.0
  */
-@Component
+@Service
 @AutoProxy
 public class DataAnalysisServiceImpl implements DataAnalysisService {
 

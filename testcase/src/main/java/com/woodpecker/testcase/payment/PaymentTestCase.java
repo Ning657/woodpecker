@@ -1,17 +1,15 @@
 package com.woodpecker.testcase.payment;
 
-import com.woodpecker.service.databuild.DataBuildOrderService;
-import com.woodpecker.service.databuild.PlatformIdEnum;
-import com.woodpecker.service.payment.cache.RedisCacheFactory;
+import com.woodpecker.service.config.Account;
+import com.woodpecker.service.superdiamond.SuperdiamondService;
 import com.woodpecker.testcase.TestCase;
 import com.xujinjian.Commons.Lang.ThreadUtil;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.testng.Assert;
 
 /**
- * 类描述:〈支付用例基类〉
+ * 类描述:〈支付TestCase基类〉
  *
  * @author: jinjianxu
  * @since: 1.0
@@ -22,73 +20,55 @@ public class PaymentTestCase extends TestCase {
   protected String userId;
 
   @Autowired
-  protected DataBuildOrderService dataBuildOrderService;
+  protected Account account;
 
   @Autowired
-  protected RedisCacheFactory redisCacheFactory;
+  protected SuperdiamondService superdiamondService;
 
   /**
-   * 常规的等待时间，3秒
+   * 常规的等待时间，2秒
    */
-  protected int sleepTime = 3;
-
-  /**
-   * Redis删除后等待的时间，6秒
-   */
-  protected int redisSleepTime = 6;
+  protected int sleepTime = 2;
 
 
   /**
-   * 方法功能描述: 删除用户名下的订单
+   * 方法功能描述: mock支付渠道
    *
-   * @param platformIdEnum 资金渠道
+   * @param payChannel 支付渠道
    * @return void
    */
-  public void deleteUserOrders(PlatformIdEnum platformIdEnum) {
-    //删除用户名下的订单
-    boolean deleteResult = dataBuildOrderService.delete(userId, platformIdEnum);
-    Assert.assertTrue(deleteResult, "校验删除用户" + userId + "名下的订单是否成功deleteResult=" + deleteResult);
+  public void mockChannel(String payChannel) {
+    String userName = account.getSdUserCode();
+    String password = account.getSdPassword();
+    Assert.assertNotNull(userName, "校验登录Superdiamond的账号是否为空");
+    Assert.assertNotNull(password, "校验登录Superdiamond的密码是否为空");
+    //打开Superdiamond登录页面
+    superdiamondService.openSuperdiamond();
+    //登录superdiamond
+    boolean loginResult = superdiamondService.login(userName, password);
+    Assert.assertTrue(loginResult, "校验登录Superdiamond是否成功");
+    //搜索tp-payment-transaction项目的配置
+    String projectName = "tp-payment-transaction";
+    boolean isExistProject = superdiamondService.search(projectName);
+    Assert.assertTrue(isExistProject, "校验是否搜索到项目" + projectName);
+    //点击Profiles --> development
+    String profiles = "development";
+    boolean isProjectPage = superdiamondService.gotoProject(projectName, profiles);
+    Assert.assertTrue(isProjectPage, "校验是否进入到tp-payment-transaction项目的development配置");
+    //选择Module --> MOCK
+    String moduleName = "MOCK";
+    superdiamondService.selectModule(moduleName);
+    //新增配置，mock指定支付渠道
+    String configKey = "transaction.tran.mock.platforms";
+    String configValue = "\"" + payChannel + "\"";
+    boolean append = true;
+    boolean deleteLastChar = true;
+    String separator = ",";
+    boolean updateSuccess = superdiamondService
+        .addConfig(configKey, configValue, append, deleteLastChar, separator);
+    Assert.assertTrue(updateSuccess, "校验指定用户的支付渠道为指定渠道是否成功");
+    //修改配置中心后，暂停几秒，等待配置生效
+    ThreadUtil.sleep(sleepTime);
   }
-
-
-  /**
-   * 方法功能描述: 删除指定订单
-   *
-   * @param orderIds 原始订单Id(多个用英文,间隔)
-   * @return void
-   */
-  public void deleteOrders(String orderIds) {
-    //删除指定订单
-    boolean deleteResult = dataBuildOrderService.delete(orderIds);
-    Assert.assertTrue(deleteResult, "校验删除订单" + orderIds + "是否成功deleteResult=" + deleteResult);
-  }
-
-
-  /**
-   * 方法功能描述: 生成还款订单
-   *
-   * @param platformIdEnum 资金渠道
-   * @param version version
-   * @return java.util.Map
-   */
-  public Map<String, String> createOrder(PlatformIdEnum platformIdEnum, String version) {
-    //生成还款订单
-    Map<String, String> map = dataBuildOrderService.create(userId, platformIdEnum, version);
-    Assert.assertEquals(map.size(), 2, "校验是否生成用户" + userId + "的还款订单成功map=" + map.toString());
-    return map;
-  }
-
-
-  /**
-   * 方法功能描述: 清除会影响支付的Redis缓存
-   *
-   * @return void
-   */
-  public void cleanRedis() {
-    redisCacheFactory.delete();
-    //删除缓存后，暂停几秒，等待生效
-    ThreadUtil.sleep(redisSleepTime);
-  }
-
 
 }

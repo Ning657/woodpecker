@@ -3,7 +3,7 @@ package com.woodpecker.service.payment.trade;
 import com.xujinjian.HttpClient.HttpResponse;
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 类描述:〈还款接口工厂〉
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @author: jinjianxu
  * @since: 1.0
  */
-@Component
+@Service
 public class RepaymentFactory {
 
   @Autowired

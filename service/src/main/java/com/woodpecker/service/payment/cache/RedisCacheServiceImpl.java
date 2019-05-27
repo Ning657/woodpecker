@@ -4,7 +4,7 @@ import com.woodpecker.commons.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 类描述:〈清除Redis缓存〉
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author: jinjianxu
  * @since: 1.0
  */
-@Component
+@Service
 public class RedisCacheServiceImpl implements RedisCacheService {
 
   private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -20,4 +20,6 @@ public interface AccountDao extends JpaRepository<AccountEntity, Long> {
 
   List<AccountEntity> findByUserId(Long userId);
 
+  List<AccountEntity> findByAccountNo(String accountNo);
+
 }

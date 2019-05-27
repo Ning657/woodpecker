@@ -10,7 +10,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 类描述:〈还款接口〉
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @author: jinjianxu
  * @since: 1.0
  */
-@Component
+@Service
 @AutoProxy
 public class RepaymentServiceImpl implements RepaymentService {
 

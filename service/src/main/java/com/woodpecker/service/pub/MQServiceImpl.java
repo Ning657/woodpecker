@@ -19,7 +19,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 类描述:〈MQ相关功能Service，包括检查MQ是否发送成功等功能〉
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * @author: jinjianxu
  * @since: 1.0
  */
-@Component
+@Service
 @AutoProxy
 public class MQServiceImpl implements MQService {
 

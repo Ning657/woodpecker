@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 
 /**
- * 类描述:〈测试用例〉
+ * 类描述:〈TestCase基类〉
  *
  * @version 1.0
  * @author: xujinjian
@@ -17,6 +17,5 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class TestCase extends BaseTestCase {
 
   protected Logger logger = LoggerFactory.getLogger(this.getClass());
-
 
 }
