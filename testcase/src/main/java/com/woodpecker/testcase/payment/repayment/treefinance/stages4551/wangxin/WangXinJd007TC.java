@@ -16,7 +16,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- * 类描述:〈网信走京东两方代扣(007)，通道42〉
+ * 类描述:〈网信走京东两方代扣007(JDAGREEMENTPAY_4551)，通道42〉
  *
  * @author: jinjianxu
  * @since: 1.0
