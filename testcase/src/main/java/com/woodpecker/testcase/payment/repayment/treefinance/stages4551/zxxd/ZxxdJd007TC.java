@@ -69,7 +69,8 @@ public class ZxxdJd007TC extends Stages4551TestCase {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
-    //TODO
+    //将第一期置为已还清
+    super.clearRepaymentSchedule(Integer.parseInt(loanOrderId), (byte) 1);
     //此时还第二期，就是提前还未来期，走的是「京东007」42
     //对第二期进行还款
     //修改用户的支付渠道
