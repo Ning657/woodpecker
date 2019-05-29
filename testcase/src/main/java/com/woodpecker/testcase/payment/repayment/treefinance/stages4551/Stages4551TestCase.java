@@ -1,10 +1,7 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.stages4551;
 
-import com.sword.autotest.framework.assertion.Validate;
-import com.woodpecker.entity.loandb.TradeOrderEntity;
 import com.woodpecker.testcase.payment.repayment.RepaymentTestCase;
 import com.xujinjian.Commons.Lang.ThreadUtil;
-import java.math.BigDecimal;
 import org.testng.Assert;
 
 /**
@@ -54,27 +51,6 @@ public class Stages4551TestCase extends RepaymentTestCase {
     Assert.assertTrue(updateSuccess, "校验指定用户的支付渠道为指定渠道是否成功");
     //修改配置中心后，暂停几秒，等待配置生效
     ThreadUtil.sleep(sleepTime);
-  }
-
-
-  /**
-   * 方法功能描述: 校验t_tp_trade_order表数据
-   *
-   * @param tradeNo tradeNo
-   * @param userId userId
-   * @param amount amount
-   * @param isDeprecated isDeprecated
-   * @return void
-   */
-  public void checkTradeOrder(String tradeNo, Integer userId, BigDecimal amount,
-      Byte isDeprecated) {
-    //根据TradeNo查找t_tp_trade_order表的记录
-    TradeOrderEntity tradeOrderEntity = tradeOrderDao.findByTradeNo(tradeNo);
-    Assert.assertNotNull(tradeOrderEntity, "校验是否生成了t_tp_trade_order记录");
-    Validate.isEquals(userId, tradeOrderEntity.getUserId(), "校验userId是否正确");
-    Validate
-        .isEquals(amount.doubleValue(), tradeOrderEntity.getAmount().doubleValue(), "校验amount是否正确");
-    Validate.isEquals(isDeprecated, tradeOrderEntity.getIsDeprecated(), "校验isDeprecated是否正确");
   }
 
 

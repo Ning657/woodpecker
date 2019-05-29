@@ -40,8 +40,13 @@ public class A extends TestCase {
   }
 
   @Test
-  public void test() {
-    System.out.println("A Test");
+  public void test1() {
+    System.out.println("A Test1");
+  }
+
+  @Test
+  public void test2() {
+    System.out.println("A Test2");
   }
 
   @AfterSuite

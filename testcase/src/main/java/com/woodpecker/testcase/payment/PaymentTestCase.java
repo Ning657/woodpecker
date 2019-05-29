@@ -1,6 +1,7 @@
 package com.woodpecker.testcase.payment;
 
 import com.woodpecker.service.config.Account;
+import com.woodpecker.service.pub.DataAnalysisService;
 import com.woodpecker.service.superdiamond.SuperdiamondService;
 import com.woodpecker.testcase.TestCase;
 import com.xujinjian.Commons.Lang.ThreadUtil;
@@ -24,6 +25,9 @@ public class PaymentTestCase extends TestCase {
 
   @Autowired
   protected SuperdiamondService superdiamondService;
+
+  @Autowired
+  protected DataAnalysisService dataAnalysisService;
 
   /**
    * 常规的等待时间，2秒
