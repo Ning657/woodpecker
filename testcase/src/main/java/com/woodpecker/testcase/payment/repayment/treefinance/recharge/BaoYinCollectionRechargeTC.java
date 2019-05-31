@@ -105,6 +105,8 @@ public class BaoYinCollectionRechargeTC extends RepaymentTestCase {
     firstRepaymentSchedule = repaymentScheduleDao
         .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
     super.checkRepaymentSchedule(firstRepaymentSchedule);
+    //校验点4：t_tp_transaction表的platId、tranStatus
+    super.checkTransaction(tradeNo1, userId, payPlatform1);
   }
 
 

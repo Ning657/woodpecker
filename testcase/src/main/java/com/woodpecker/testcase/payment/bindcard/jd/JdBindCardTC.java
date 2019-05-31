@@ -52,7 +52,7 @@ public class JdBindCardTC extends BindCardTestCase {
     logger.debug("请求绑卡返回的内容为[{}]", content);
     JSONObject json = JsonUtil.parseObject(content);
     //校验
-    validate(json.getString("code"), json.getString("message"));
+    super.validateBindCardResponse(json.getString("code"), json.getString("message"));
     String data = json.getString("data");
     //确认绑卡
     httpResponse = bindCardService
@@ -62,13 +62,13 @@ public class JdBindCardTC extends BindCardTestCase {
     logger.debug("确认绑卡返回的内容为[{}]", content);
     json = JsonUtil.parseObject(content);
     //校验
-    validate(json.getString("code"), json.getString("message"));
+    super.validateBindCardResponse(json.getString("code"), json.getString("message"));
     //保存bankAccountId，后续要校验
     String bankAccountId = json.getString("data");
     //校验数据库表字段
     String bindId = "\"" + this.channel + "\":\"" + data + "\"";
     String channel = "\"" + this.channel + "\"";
-    super.check(data, bankAccountId, bindId, channel);
+    super.checkBindCardTables(data, bankAccountId, bindId, channel);
   }
 
 

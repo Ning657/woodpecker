@@ -190,7 +190,7 @@ public class WangXinPremiumDeductNoticeTC extends PaymentTestCase {
 
 //    log.info("orderId=[{}]", orderId);
     orderId = 54889246;
-    loanOrderId = loanOrderDao.findByOrderId(orderId).getId();
+    loanOrderId = loanOrderDao.findByOrderId(orderId).get(0).getId();
 
     String outOrderNo = "" + DateUtil.getTime();
     // 2、成功；3、失败

@@ -4,32 +4,23 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sword.autotest.framework.assertion.Validate;
 import com.sword.autotest.framework.exception.TestCaseException;
-import com.woodpecker.dao.loandb.BankAccountDao;
-import com.woodpecker.dao.loandb.LoanOrderDao;
-import com.woodpecker.dao.loandb.RepaymentScheduleDao;
-import com.woodpecker.dao.loandb.SinglePremiumScheduleDao;
-import com.woodpecker.dao.loandb.TradeOrderDao;
 import com.woodpecker.dao.payment.PayChannelBankDao;
 import com.woodpecker.entity.loandb.BankAccountEntity;
 import com.woodpecker.entity.loandb.LoanOrderEntity;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
-import com.woodpecker.entity.loandb.SinglePremiumScheduleEntity;
 import com.woodpecker.entity.loandb.TradeOrderEntity;
 import com.woodpecker.entity.payment.PayChannelBankEntity;
+import com.woodpecker.entity.payment.TransactionEntity;
 import com.woodpecker.pageobject.superdiamond.ProjectProfilesPageObject;
-import com.woodpecker.service.databuild.DataBuildOrderService;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.service.payment.cache.RedisCacheFactory;
-import com.woodpecker.service.payment.trade.RepaymentFactory;
 import com.woodpecker.service.pub.MQService;
 import com.woodpecker.testcase.payment.PaymentTestCase;
 import com.xujinjian.Commons.Lang.StringUtil;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
 
@@ -42,37 +33,16 @@ import org.testng.Assert;
 public class RepaymentTestCase extends PaymentTestCase {
 
   @Autowired
-  protected RepaymentScheduleDao repaymentScheduleDao;
-
-  @Autowired
-  protected SinglePremiumScheduleDao singlePremiumScheduleDao;
-
-  @Autowired
-  protected DataBuildOrderService dataBuildOrderService;
-
-  @Autowired
   protected RedisCacheFactory redisCacheFactory;
 
   @Autowired
   protected ProjectProfilesPageObject projectProfilesPageObject;
 
   @Autowired
-  protected TradeOrderDao tradeOrderDao;
-
-  @Autowired
   protected MQService mqService;
 
   @Autowired
   protected PayChannelBankDao payChannelBankDao;
-
-  @Autowired
-  protected LoanOrderDao loanOrderDao;
-
-  @Autowired
-  protected BankAccountDao bankAccountDao;
-
-  @Autowired
-  protected RepaymentFactory repaymentFactory;
 
   /**
    * 还款成功后的MQ的topic
@@ -227,6 +197,48 @@ public class RepaymentTestCase extends PaymentTestCase {
     superdiamondService.gotoIndexPage();
     //修改配置中心后，暂停几秒，等待配置生效
     ThreadUtil.sleep(sleepTime);
+  }
+
+
+  /**
+   * 方法功能描述: 校验t_tp_transaction表数据
+   *
+   * @param tradeNo tradeNo
+   * @param userId userId
+   * @param payPlatform payPlatform
+   * @return void
+   */
+  public void checkTransaction(String tradeNo, String userId, Byte payPlatform) {
+    //根据TradeNo查找t_tp_transaction表的记录
+    TransactionEntity transactionEntity = transactionDao.findByOrderNo(tradeNo);
+    Assert.assertNotNull(transactionEntity, "校验是否生成了t_tp_transaction记录");
+    Validate.isEquals(userId, transactionEntity.getBizUserId(), "校验bizUserId是否正确");
+    Validate.isEquals(payPlatform, transactionEntity.getPlatId(), "校验platId是否正确");
+    Validate.isEquals("2", transactionEntity.getTranStatus(), "校验tranStatus是否正确");
+  }
+
+
+  /**
+   * 方法功能描述: 校验t_tp_transaction表数据
+   *
+   * @param tradeNo tradeNo
+   * @param userId userId
+   * @param payPlatforms payPlatform
+   * @return void
+   */
+  public void checkTransaction(String tradeNo, String userId, String[] payPlatforms) {
+    //根据TradeNo查找t_tp_transaction表的记录
+    TransactionEntity transactionEntity = transactionDao.findByOrderNo(tradeNo);
+    Assert.assertNotNull(transactionEntity, "校验是否生成了t_tp_transaction记录");
+    Validate.isEquals(userId, transactionEntity.getBizUserId(), "校验bizUserId是否正确");
+    boolean flag = false;
+    for (String payPlatform : payPlatforms) {
+      if (StringUtil.equals(payPlatform, String.valueOf(transactionEntity.getPlatId()))) {
+        flag = true;
+      }
+    }
+    Validate.isTrue(flag, "校验platId是否正确");
+    Validate.isEquals("2", transactionEntity.getTranStatus(), "校验tranStatus是否正确");
   }
 
 
@@ -477,50 +489,5 @@ public class RepaymentTestCase extends PaymentTestCase {
     Validate.isEquals(isDeprecated, tradeOrderEntity.getIsDeprecated(), "校验isDeprecated是否正确");
   }
 
-
-  /**
-   * 方法功能描述: 将还款计划的某一期置为已还清
-   *
-   * @param loanOrderId loanOrderId
-   * @param stage 期数
-   * @return void
-   */
-  public void clearRepaymentSchedule(Integer loanOrderId, Byte stage) {
-    RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(loanOrderId, stage);
-    if (repaymentScheduleEntity.getIsClear().intValue() == 0) {
-      RepaymentScheduleEntity newRepaymentScheduleEntity = new RepaymentScheduleEntity();
-      BeanUtils.copyProperties(repaymentScheduleEntity, newRepaymentScheduleEntity, "id");
-      newRepaymentScheduleEntity.setRepayAt(new Date());
-      newRepaymentScheduleEntity.setIsClear((byte) 1);
-      newRepaymentScheduleEntity.setStatus((byte) 11);
-      repaymentScheduleDao.saveAndFlush(newRepaymentScheduleEntity);
-    }
-  }
-
-
-  /**
-   * 方法功能描述: 将趸交计划置为已还清
-   *
-   * @param loanOrderId loanOrderId
-   * @return void
-   */
-  public void clearSinglePremiumSchedule(Integer loanOrderId) {
-    SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-        .findByLoanOrderId(loanOrderId);
-    if (singlePremiumScheduleEntity.getStatus().intValue() == 0) {
-      SinglePremiumScheduleEntity newSinglePremiumScheduleEntity = new SinglePremiumScheduleEntity();
-      BeanUtils.copyProperties(singlePremiumScheduleEntity, newSinglePremiumScheduleEntity, "id");
-      newSinglePremiumScheduleEntity.setCleared((byte) 1);
-      newSinglePremiumScheduleEntity.setRepayAt(new Date());
-      newSinglePremiumScheduleEntity.setStatus((byte) 11);
-      newSinglePremiumScheduleEntity
-          .setRepaidGratuity(singlePremiumScheduleEntity.getRepaidGratuity());
-      newSinglePremiumScheduleEntity.setRepaidAmount(singlePremiumScheduleEntity.getRepaidAmount());
-      singlePremiumScheduleDao.saveAndFlush(newSinglePremiumScheduleEntity);
-    }
-  }
-
-
-
+  
 }

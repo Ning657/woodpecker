@@ -149,6 +149,8 @@ public class WangXinJd007TC extends Stages4551TestCase {
     firstRepaymentSchedule = repaymentScheduleDao
         .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
     super.checkRepaymentSchedule(firstRepaymentSchedule);
+    //校验点4：t_tp_transaction表的platId、tranStatus
+    super.checkTransaction(tradeNo1, userId, payPlatform1);
 
     ////////////////////////////////////////////////////////////////
 
@@ -192,7 +194,8 @@ public class WangXinJd007TC extends Stages4551TestCase {
     secondRepaymentSchedule = repaymentScheduleDao
         .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
     super.checkRepaymentSchedule(secondRepaymentSchedule);
-
+    //校验点4：t_tp_transaction表的platId、tranStatus
+    super.checkTransaction(tradeNo2, userId, payPlatform2);
   }
 
 

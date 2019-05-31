@@ -13,8 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @Dao
 public interface LoanOrderDao extends JpaRepository<LoanOrderEntity, Integer> {
-
-  LoanOrderEntity findByOrderId(Integer orderId);
+  
+  List<LoanOrderEntity> findByOrderId(Integer orderId);
 
   List<LoanOrderEntity> findByUserId(Integer userId);
 
