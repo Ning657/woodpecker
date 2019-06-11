@@ -1,4 +1,4 @@
-package com.woodpecker.testcase.payment.bindcard.jd;
+package com.woodpecker.testcase.payment.bindcard.treefinance.jd;
 
 import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.CustInfoEntity;
@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
- * 类描述:〈京东绑卡TC〉
+ * 类描述:〈大树京东绑卡TC〉
  *
  * @author: jinjianxu
  * @since: 1.0

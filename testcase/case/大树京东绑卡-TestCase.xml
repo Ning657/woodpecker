@@ -6,7 +6,7 @@
   <test name="MOCK京东绑卡">
     <classes>
       <class
-        name="com.woodpecker.testcase.payment.bindcard.jd.JdBindCardTC"/>
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.jd.JdBindCardTC"/>
     </classes>
   </test>
 </suite>

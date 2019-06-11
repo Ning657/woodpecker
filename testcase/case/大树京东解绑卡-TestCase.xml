@@ -6,7 +6,7 @@
   <test name="MOCK京东解绑卡">
     <classes>
       <class
-        name="com.woodpecker.testcase.payment.unbindcard.jd.JdUnBindCardTC"/>
+        name="com.woodpecker.testcase.payment.unbindcard.treefinance.jd.JdUnBindCardTC"/>
     </classes>
   </test>
 </suite>

@@ -54,7 +54,7 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected int redisSleepTime = 3;
 
-
+  
   /**
    * 方法功能描述: 删除用户名下的订单
    *

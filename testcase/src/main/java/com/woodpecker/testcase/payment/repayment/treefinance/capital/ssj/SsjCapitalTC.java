@@ -30,7 +30,7 @@ public class SsjCapitalTC extends RepaymentTestCase {
    */
   private final PlatformIdEnum platformIdEnum = PlatformIdEnum.SSJ;
 
-  protected String version = "1";
+  protected String version = "4";
 
   private String orderId;
 

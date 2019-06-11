@@ -14,6 +14,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface PayGroupDao extends JpaRepository<PayGroupEntity, Integer> {
 
+
   List<PayGroupEntity> findByPlatformId(Integer platformId);
+
+
+  List<PayGroupEntity> findByPlatformIdAndGroupName(Integer platformId, String groupName);
+
+
+  PayGroupEntity findByPlatformIdAndGroupNameAndVersion(Integer platformId, String groupName,
+      String version);
+
 
 }

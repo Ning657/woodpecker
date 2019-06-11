@@ -1,4 +1,4 @@
-package com.woodpecker.testcase.payment.unbindcard.jd;
+package com.woodpecker.testcase.payment.unbindcard.treefinance.jd;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sword.autotest.framework.assertion.Validate;

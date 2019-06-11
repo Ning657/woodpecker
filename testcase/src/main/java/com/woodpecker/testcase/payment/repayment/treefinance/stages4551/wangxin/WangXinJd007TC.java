@@ -157,7 +157,7 @@ public class WangXinJd007TC extends Stages4551TestCase {
     //此时还第二期，就是提前还未来期，走的是「京东007」42
     //对第二期进行还款
     //修改用户的支付渠道
-    super.updateUserPayChannelConfig(channel);
+    //super.updateUserPayChannelConfig(channel);//可以不用指定支付通道，因为就应该走这个通道，所以不用指定
     //第二期
     RepaymentScheduleEntity secondRepaymentSchedule = repaymentScheduleDao
         .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
@@ -181,7 +181,7 @@ public class WangXinJd007TC extends Stages4551TestCase {
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
     BigDecimal amount2 = secondRepaymentSchedule.getAmount();
     //PayWay原本应该是6，但因为我是直接指定了用户的支付通道，把长剑生成的PayWay=6覆盖掉了。所以暂时要么不校验这个PayWay，或者PayWay=99
-    Byte payWay2 = 99;
+    Byte payWay2 = 6;
     Byte payPlatform2 = 42;
     String channel2 = "102";
     Byte isDeprecated2 = 0;
