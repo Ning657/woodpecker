@@ -392,4 +392,50 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
   }
 
 
+  /**
+   * 方法功能描述: 获取配置值
+   *
+   * @param configKey key
+   * @return java.lang.String
+   */
+  @Override
+  public String getConfigValue(String configKey) {
+    String configValue = null;
+    //循环查找key
+    boolean isExistKey = false;
+    for (int i = 0; i < 30; i++) {
+      //判断当前页是否存在key
+      boolean flag = projectProfilesPageObject.isExistKey(configKey);
+      if (flag) {
+        //当前页存在这个key
+        isExistKey = true;
+        break;
+      }
+      logger.debug("当前页不存在configKey=[{}]配置项", configKey);
+      //判断是否有下一页
+      boolean f1 = projectProfilesPageObject.isExistNextPageBtn();
+      if (f1) {
+        //还有下一页
+        //点击下一页按钮
+        projectProfilesPageObject.clickNextPageBtn();
+        ThreadUtil.sleep();
+      } else {
+        //最后一页了，还是找不到key
+        break;
+      }
+    }
+    if (!isExistKey) {
+      //如果没有这个key，则直接返回
+      logger.error("不存在configKey=[{}]配置项", configKey);
+      return null;
+    }
+    //点击修改按钮
+    projectProfilesPageObject.clickUpdateConfigBtn(configKey);
+    //获取配置值
+    configValue = projectProfilesPageObject.getConfigValue(configKey);
+    logger.debug("读取到的配置[{}]的值为[{}]", configKey, configValue);
+    return configValue;
+  }
+
+
 }

@@ -98,4 +98,13 @@ public interface SuperdiamondService {
   boolean deleteConfig(String configKey, String configValue);
 
 
+  /**
+   * 方法功能描述: 获取配置值
+   *
+   * @param configKey key
+   * @return java.lang.String
+   */
+  String getConfigValue(String configKey);
+
+
 }

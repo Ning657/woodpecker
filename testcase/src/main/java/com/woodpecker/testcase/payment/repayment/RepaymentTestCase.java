@@ -54,6 +54,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected int redisSleepTime = 3;
 
+  /**
+   * router.env.version
+   */
+  protected String routerEnvVersion = null;
+
   
   /**
    * 方法功能描述: 删除用户名下的订单
@@ -463,7 +468,7 @@ public class RepaymentTestCase extends PaymentTestCase {
   public PayChannelBankEntity setDayAmountLimit(String code, Integer dayAmount,
       String payChannelCode) {
     PayChannelBankEntity payChannelBankEntity = payChannelBankDao
-        .findByCodeAndPayChannelCodeAndVersion(code, payChannelCode, "test");
+        .findByCodeAndPayChannelCodeAndVersion(code, payChannelCode, getRouterEnvVersion());
     payChannelBankEntity.setDayAmount(dayAmount);
     return payChannelBankDao.save(payChannelBankEntity);
   }
@@ -487,6 +492,41 @@ public class RepaymentTestCase extends PaymentTestCase {
     Validate
         .isEquals(amount.doubleValue(), tradeOrderEntity.getAmount().doubleValue(), "校验amount是否正确");
     Validate.isEquals(isDeprecated, tradeOrderEntity.getIsDeprecated(), "校验isDeprecated是否正确");
+  }
+
+
+  /**
+   * 方法功能描述: 获取Router-router.env.version的配置值
+   *
+   * @return java.lang.String
+   */
+  public String getRouterEnvVersion() {
+    if (StringUtil.isNotEmpty(this.routerEnvVersion)) {
+      log.debug("routerEnvVersion=[{}]", this.routerEnvVersion);
+      return this.routerEnvVersion;
+    }
+    String userName = account.getSdUserCode();
+    String password = account.getSdPassword();
+    Assert.assertNotNull(userName, "校验登录Superdiamond的账号是否为空");
+    Assert.assertNotNull(password, "校验登录Superdiamond的密码是否为空");
+    //打开Superdiamond登录页面
+    superdiamondService.openSuperdiamond();
+    //登录superdiamond
+    boolean loginResult = superdiamondService.login(userName, password);
+    Assert.assertTrue(loginResult, "校验登录Superdiamond是否成功");
+    //搜索tp-payment-router项目的配置
+    String projectName = "tp-payment-router";
+    boolean isExistProject = superdiamondService.search(projectName);
+    Assert.assertTrue(isExistProject, "校验是否搜索到项目" + projectName);
+    //点击Profiles --> development
+    String profiles = "development";
+    boolean isProjectPage = superdiamondService.gotoProject(projectName, profiles);
+    Assert.assertTrue(isProjectPage, "校验是否进入到tp-payment-router项目的development配置");
+    //获取配置值
+    String configKey = "router.env.version";
+    this.routerEnvVersion = superdiamondService.getConfigValue(configKey);
+    logger.debug("配置[{}]的值为[{}]", configKey, this.routerEnvVersion);
+    return this.routerEnvVersion;
   }
 
   

@@ -128,7 +128,7 @@ public class SsjJd007TC extends Stages4551TestCase {
     //删除Redis缓存
     super.cleanRedis();
     //还原用户的支付渠道
-    super.deleteUserPayChannelConfig();
+    //super.deleteUserPayChannelConfig();//测试开始前已经删除过了，且测试中未设置用户支付渠道，所以测试结束后不用再删
   }
 
 
