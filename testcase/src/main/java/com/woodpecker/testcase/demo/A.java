@@ -1,6 +1,8 @@
 package com.woodpecker.testcase.demo;
 
 import com.woodpecker.testcase.TestCase;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -67,6 +69,16 @@ public class A extends TestCase {
   @AfterMethod
   public void afterMethod() {
     System.out.println("A AfterMethod");
+  }
+
+  @PostConstruct
+  public void init() {
+    System.out.println("A PostConstruct");
+  }
+
+  @PreDestroy
+  public void close() {
+    System.out.println("A PreDestroy");
   }
 
 }

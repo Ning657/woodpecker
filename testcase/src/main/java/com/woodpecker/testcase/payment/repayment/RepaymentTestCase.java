@@ -5,15 +5,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.sword.autotest.framework.assertion.Validate;
 import com.sword.autotest.framework.exception.TestCaseException;
 import com.woodpecker.dao.payment.PayChannelBankDao;
+import com.woodpecker.dao.payment.PayPlatformDao;
 import com.woodpecker.entity.loandb.BankAccountEntity;
 import com.woodpecker.entity.loandb.LoanOrderEntity;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.entity.loandb.TradeOrderEntity;
 import com.woodpecker.entity.payment.PayChannelBankEntity;
+import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.entity.payment.TransactionEntity;
 import com.woodpecker.pageobject.superdiamond.ProjectProfilesPageObject;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.service.payment.cache.RedisCacheFactory;
+import com.woodpecker.service.payment.pay.PayOperationService;
 import com.woodpecker.service.pub.MQService;
 import com.woodpecker.testcase.payment.PaymentTestCase;
 import com.xujinjian.Commons.Lang.StringUtil;
@@ -43,6 +46,12 @@ public class RepaymentTestCase extends PaymentTestCase {
 
   @Autowired
   protected PayChannelBankDao payChannelBankDao;
+
+  @Autowired
+  protected PayPlatformDao payPlatformDao;
+
+  @Autowired
+  protected PayOperationService payOperationService;
 
   /**
    * 还款成功后的MQ的topic
@@ -529,5 +538,48 @@ public class RepaymentTestCase extends PaymentTestCase {
     return this.routerEnvVersion;
   }
 
-  
+
+  /**
+   * 方法功能描述: 禁用除指定的支付通道外的通道
+   *
+   * @param codes code
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
+   */
+  public List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes) {
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
+        .findByVersion(getRouterEnvVersion());
+    //ban
+    payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
+    return payPlatformEntityList;
+  }
+
+
+  /**
+   * 方法功能描述: 禁用指定的支付通道
+   *
+   * @param codes code
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
+   */
+  public List<PayPlatformEntity> banPayPlatformByCode(String[] codes) {
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
+        .findByVersion(getRouterEnvVersion());
+    //ban
+    payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
+    return payPlatformEntityList;
+  }
+
+
+  /**
+   * 方法功能描述: 还原支付通道状态
+   *
+   * @param payPlatformEntityList List<PayPlatformEntity>
+   * @return void
+   */
+  public void recoverPayPlatform(List<PayPlatformEntity> payPlatformEntityList) {
+    payPlatformDao.save(payPlatformEntityList);
+  }
+
+
 }

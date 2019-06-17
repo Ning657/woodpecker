@@ -18,6 +18,8 @@ public interface PayPlatformDao extends JpaRepository<PayPlatformEntity, Integer
 
   PayPlatformEntity findByCodeAndVersion(String code, String version);
 
+  List<PayPlatformEntity> findByVersion(String version);
+
   List<PayPlatformEntity> findByCodeAndStatus(String code, Byte status);
 
   PayPlatformEntity findByCodeAndStatusAndVersion(String code, Byte status, String version);
