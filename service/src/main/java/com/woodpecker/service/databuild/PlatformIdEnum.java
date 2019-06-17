@@ -39,7 +39,9 @@ public enum PlatformIdEnum {
 
   MNW("24", "玛瑙湾单标"),
 
-  ZX("25", "西藏信托");
+  ZX("25", "西藏信托"),
+
+  YLW("26", "有利网");
 
 
   String value;
