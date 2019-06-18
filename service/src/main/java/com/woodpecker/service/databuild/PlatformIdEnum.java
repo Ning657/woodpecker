@@ -41,7 +41,9 @@ public enum PlatformIdEnum {
 
   ZX("25", "西藏信托"),
 
-  YLW("26", "有利网");
+  YLW("26", "有利网"),
+
+  XRXT("27", "兴睿信托");
 
 
   String value;
