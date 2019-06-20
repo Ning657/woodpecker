@@ -101,7 +101,7 @@ public class PayOperationServiceImpl implements PayOperationService {
    * @param codes code
    * @return void
    */
-  @Transactional
+  @Transactional(value = "paymentTransactionManager")
   @Override
   public void banOtherPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList,
       String[] codes) {
@@ -143,7 +143,7 @@ public class PayOperationServiceImpl implements PayOperationService {
    * @param codes code
    * @return void
    */
-  @Transactional
+  @Transactional(value = "paymentTransactionManager")
   @Override
   public void banPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList, String[] codes) {
     //禁用除指定支付通道外的通道
