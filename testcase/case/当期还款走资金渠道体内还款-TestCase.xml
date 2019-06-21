@@ -12,6 +12,8 @@
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.capital.ssj.SsjCapitalTC"/>
       <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.capital.wangxin.WangXinCapitalTC"/>
+      <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.capital.xizang.XiZangCapitalTC"/>
     </classes>
   </test>

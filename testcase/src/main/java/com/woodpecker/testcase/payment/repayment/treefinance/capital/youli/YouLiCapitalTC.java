@@ -1,4 +1,4 @@
-package com.woodpecker.testcase.payment.repayment.treefinance.capital.xizang;
+package com.woodpecker.testcase.payment.repayment.treefinance.capital.youli;
 
 import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
@@ -16,19 +16,19 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- * 类描述:〈西藏信托走XZ_TRUST，通道59〉
+ * 类描述:〈有利走YOOLI_PAY，通道62〉
  *
  * @author: jinjianxu
  * @since: 1.0
  */
-public class XiZangCapitalTC extends RepaymentTestCase {
+public class YouLiCapitalTC extends RepaymentTestCase {
 
-  protected String payChannel = "XZ_TRUST";
+  protected String payChannel = "YOOLI_PAY";
 
   /**
-   * 资金渠道，指定为西藏信托渠道，不可改
+   * 资金渠道，指定为有利渠道，不可改
    */
-  private final PlatformIdEnum platformIdEnum = PlatformIdEnum.ZX;
+  private final PlatformIdEnum platformIdEnum = PlatformIdEnum.YLW;
 
   protected String version = "1";
 
@@ -36,15 +36,15 @@ public class XiZangCapitalTC extends RepaymentTestCase {
 
   private String loanOrderId;
 
-  String payChannelCode = "XZ_TRUST";
+  String payChannelCode = "YOOLI";
 
 
   @BeforeClass
   public void ready() {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
     super.deleteUserPayChannelConfig();
-    //mock西藏信托
-    super.mockChannel(payChannel);
+    //mock有利
+    //super.mockChannel(payChannel);
     //删除Redis缓存
     super.cleanRedis();
   }
@@ -67,11 +67,11 @@ public class XiZangCapitalTC extends RepaymentTestCase {
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
     //读取还款计划表的前面二期的还款计划
-    //因为第一期是正常还款，走的是「西藏信托 59」
+    //因为第一期是正常还款，走的是「有利资金账户」，也就是「有利 62」
     //第一期
     RepaymentScheduleEntity firstRepaymentSchedule = repaymentScheduleDao
         .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
-    //注意点：需要看下银行限额，如果超过限额，则第一期还款原本是走「西藏信托 59」的，会变成走「京东两方代扣（007）42」
+    //注意点：需要看下银行限额，如果超过限额，则第一期还款原本是走「有利资金账户」的，会变成走「京东两方代扣（007）42」
     //获取出bankId
     Integer bankId = super.getBankId(Integer.parseInt(loanOrderId));
     //获取出银行限额
@@ -127,9 +127,9 @@ public class XiZangCapitalTC extends RepaymentTestCase {
     Assert.assertEquals(message1, "请求成功", "校验发送催收代扣接口是否成功");
     //还款后校验
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
-    Byte payWay1 = 32;
-    Byte payPlatform1 = 59;
-    String channel1 = "59";
+    Byte payWay1 = 33;
+    Byte payPlatform1 = 62;
+    String channel1 = "62";
     Byte isDeprecated1 = 0;
     super.checkTradeOrder(tradeNo1, Integer.valueOf(userId), amount1, payWay1, payPlatform1,
         channel1, isDeprecated1);
@@ -158,5 +158,5 @@ public class XiZangCapitalTC extends RepaymentTestCase {
     super.cleanRedis();
   }
 
-  
+
 }

@@ -28,8 +28,6 @@ public class WangXinJd007TC extends Stages4551TestCase {
    */
   protected int channel = 42;
 
-  protected String payChannel = "WANGXIN";
-
   protected String payChannel2 = "JDAGREEMENTPAY_4551";
 
   /**
@@ -43,15 +41,13 @@ public class WangXinJd007TC extends Stages4551TestCase {
 
   private String loanOrderId;
 
-  String payChannelCode = "WX";
+  private String payChannelCode = "JD";
 
 
   @BeforeClass
   public void ready() {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
     super.deleteUserPayChannelConfig();
-    //mock网信扣款
-    super.mockChannel(payChannel);
     //mock京东(007-4551)
     super.mockChannel(payChannel2);
     //删除Redis缓存
@@ -75,25 +71,29 @@ public class WangXinJd007TC extends Stages4551TestCase {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
-    //读取还款计划表的前面二期的还款计划
-    //因为第一期是正常还款，走的是「网信存管户」，也就是「网信还款-先锋支付 23」
-    //第一期
-    RepaymentScheduleEntity firstRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
-    //注意点：需要看下银行限额，如果超过限额，则第一期还款原本是走「网信存管户」的，会变成走「京东两方代扣（007）42」
+    //将第一期还款计划置为已结清
+    super.clearRepaymentSchedule(Integer.parseInt(loanOrderId), (byte) 1);
+    //此时还第二期，就是提前还未来期，走的是「京东007」42
+    //对第二期进行还款
+    //修改用户的支付渠道
+    //super.updateUserPayChannelConfig(channel);//可以不用指定支付通道，因为就应该走这个通道，所以不用指定
+    //第二期
+    RepaymentScheduleEntity secondRepaymentSchedule = repaymentScheduleDao
+        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
+    //注意点：需要看下银行限额，如果超过限额，则需要调大限额金额
     //获取出bankId
     Integer bankId = super.getBankId(Integer.parseInt(loanOrderId));
     //获取出银行限额
     Integer dayAmountLimit = super.getDayAmountLimit(String.valueOf(bankId), payChannelCode);
     //获取出还款计划当期的金额
-    BigDecimal amount1 = firstRepaymentSchedule.getAmount();
+    BigDecimal amount1 = secondRepaymentSchedule.getAmount();
     //是否需要恢复银行原来的限额标记
     boolean needRestore = false;
     //判断当前还款金额是否超过限额
     if (amount1.compareTo(new BigDecimal(dayAmountLimit)) == 1) {
       log.debug("当前订单[{}]金额[{}]超过了银行[{}]日限额[{}],", orderId, amount1, bankId, dayAmountLimit);
       //计算新的银行限额
-      Integer newDayAmountLimit = amount1.add(new BigDecimal(100)).intValue();
+      Integer newDayAmountLimit = amount1.add(super.upAmount).intValue();
       log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
       //修改银行限额
       super.setDayAmountLimit(String.valueOf(bankId), newDayAmountLimit, payChannelCode);
@@ -102,14 +102,12 @@ public class WangXinJd007TC extends Stages4551TestCase {
       //需要恢复银行原来的限额
       needRestore = true;
     }
-    //对第一期进行还款
+    //对第二期进行还款
     //通过催收代扣方式还款
-    HttpResponse httpResponse1 = null;
+    HttpResponse httpResponse2 = null;
     try {
-      httpResponse1 = repaymentFactory
-          .collectionWithhold(Integer.valueOf(userId), (long) firstRepaymentSchedule.getId());
-    } catch (Throwable e) {
-      throw e;
+      httpResponse2 = repaymentFactory
+          .collectionWithhold(Integer.valueOf(userId), (long) secondRepaymentSchedule.getId());
     } finally {
       //判断是否需要恢复银行原来的限额
       if (needRestore) {
@@ -122,49 +120,6 @@ public class WangXinJd007TC extends Stages4551TestCase {
         needRestore = false;
       }
     }
-    String result1 = httpResponse1.getContent();
-    log.debug("催收代扣接口返回-->[{}]", result1);
-    //判断催收代扣请求是否成功
-    //将接口返回的内容转换成JSON
-    JSONObject json1 = JsonUtil.parseObject(result1);
-    String code1 = json1.getString("code");
-    String message1 = json1.getString("message");
-    JSONObject data1 = json1.getJSONObject("data");
-    String tradeNo1 = data1.getString("tradeNo");
-    String payNo1 = data1.getString("payNo");
-    Assert.assertEquals(code1, "0000", "校验发送催收代扣接口是否成功");
-    Assert.assertEquals(message1, "请求成功", "校验发送催收代扣接口是否成功");
-    //还款后校验
-    //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
-    Byte payWay1 = 17;
-    Byte payPlatform1 = 23;
-    String channel1 = "92";
-    Byte isDeprecated1 = 0;
-    super.checkTradeOrder(tradeNo1, Integer.valueOf(userId), amount1, payWay1, payPlatform1,
-        channel1, isDeprecated1);
-    //校验点2：是否发送topic:recharge的MQ，通知账务入账
-    int repaymentScheduleId1 = firstRepaymentSchedule.getId();
-    super.checkMQ(topic, payNo1, userId, repaymentScheduleId1);
-    //校验点3：t_repayment_schedule表是否 已还
-    firstRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
-    super.checkRepaymentSchedule(firstRepaymentSchedule);
-    //校验点4：t_tp_transaction表的platId、tranStatus
-    super.checkTransaction(tradeNo1, userId, payPlatform1);
-
-    ////////////////////////////////////////////////////////////////
-
-    //此时还第二期，就是提前还未来期，走的是「京东007」42
-    //对第二期进行还款
-    //修改用户的支付渠道
-    //super.updateUserPayChannelConfig(channel);//可以不用指定支付通道，因为就应该走这个通道，所以不用指定
-    //第二期
-    RepaymentScheduleEntity secondRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
-    //对第二期进行还款
-    //通过催收代扣方式还款
-    HttpResponse httpResponse2 = repaymentFactory
-        .collectionWithhold(Integer.valueOf(userId), (long) secondRepaymentSchedule.getId());
     String result2 = httpResponse2.getContent();
     log.debug("催收代扣接口返回-->[{}]", result2);
     //判断催收代扣请求是否成功
@@ -212,6 +167,11 @@ public class WangXinJd007TC extends Stages4551TestCase {
     super.cleanRedis();
     //还原用户的支付渠道
     //super.deleteUserPayChannelConfig();//测试开始前已经删除过了，且测试中未设置用户支付渠道，所以测试结束后不用再删
+  }
+
+
+  public String getPayChannelCode() {
+    return payChannelCode;
   }
 
 

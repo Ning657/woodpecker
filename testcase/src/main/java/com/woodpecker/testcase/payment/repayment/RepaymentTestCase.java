@@ -68,6 +68,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected String routerEnvVersion = null;
 
+  /**
+   * 修改银行限额时，在还款金额的基础上，多增加一定金额，防止被限额
+   */
+  protected BigDecimal upAmount = new BigDecimal(1000);
+
   
   /**
    * 方法功能描述: 删除用户名下的订单

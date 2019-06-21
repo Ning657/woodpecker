@@ -84,7 +84,7 @@ public class BoHaiCapitalTC extends RepaymentTestCase {
     if (amount1.compareTo(new BigDecimal(dayAmountLimit)) == 1) {
       log.debug("当前订单[{}]金额[{}]超过了银行[{}]日限额[{}],", orderId, amount1, bankId, dayAmountLimit);
       //计算新的银行限额
-      Integer newDayAmountLimit = amount1.add(new BigDecimal(100)).intValue();
+      Integer newDayAmountLimit = amount1.add(super.upAmount).intValue();
       log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
       //修改银行限额
       super.setDayAmountLimit(String.valueOf(bankId), newDayAmountLimit, payChannelCode);
