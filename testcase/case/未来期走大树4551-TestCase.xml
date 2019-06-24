@@ -19,8 +19,6 @@
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.xizang.XiZangJd007TC"/>
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.zxxd.ZxxdJd007TC"/>
-      <class
-        name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.xingrui.XingRuiJd007TC"/>
     </classes>
   </test>
 </suite>

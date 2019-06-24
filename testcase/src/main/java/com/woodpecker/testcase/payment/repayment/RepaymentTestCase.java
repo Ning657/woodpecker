@@ -78,6 +78,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected int recordedTime = 3;
 
+  /**
+   * 等待被修改过的支付通道生效时间，3秒
+   */
+  protected int payPlatformTime = 3;
+
   
   /**
    * 方法功能描述: 删除用户名下的订单
@@ -563,7 +568,12 @@ public class RepaymentTestCase extends PaymentTestCase {
     List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
         .findByVersion(getRouterEnvVersion());
     //ban
-    return payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
+    List<PayPlatformEntity> list = payOperationService
+        .banOtherPayPlatformByCode(payPlatformEntityList, codes);
+    //等待X秒，让刚修改完的通道生效
+    ThreadUtil.sleep(payPlatformTime);
+    //return payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
+    return list;
   }
 
 
@@ -578,7 +588,12 @@ public class RepaymentTestCase extends PaymentTestCase {
     List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
         .findByVersion(getRouterEnvVersion());
     //ban
-    return payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
+    List<PayPlatformEntity> list = payOperationService
+        .banPayPlatformByCode(payPlatformEntityList, codes);
+    //等待X秒，让刚修改完的通道生效
+    ThreadUtil.sleep(payPlatformTime);
+    //return payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
+    return list;
   }
 
 

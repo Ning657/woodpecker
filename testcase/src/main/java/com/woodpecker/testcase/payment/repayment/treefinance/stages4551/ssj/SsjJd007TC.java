@@ -2,12 +2,14 @@ package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.ssj;
 
 import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
+import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.testcase.payment.repayment.treefinance.stages4551.Stages4551TestCase;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import com.xujinjian.HttpClient.HttpResponse;
 import com.xujinjian.Json.JsonUtil;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -43,6 +45,16 @@ public class SsjJd007TC extends Stages4551TestCase {
   private String loanOrderId;
 
   private String payChannelCode = "JD";
+
+  /**
+   * 需要禁用的支付通道code
+   */
+  String[] codes = {"60"};
+
+  /**
+   * 被修改过的支付通道
+   */
+  List<PayPlatformEntity> payPlatformList = null;
 
 
   @BeforeClass
@@ -103,6 +115,8 @@ public class SsjJd007TC extends Stages4551TestCase {
       //需要恢复银行原来的限额
       needRestore = true;
     }
+    //禁用通联，如果不禁用通联，则会有一定的概率会去走通联
+    payPlatformList = super.banPayPlatformByCode(codes);
     //对第二期进行还款
     //通过催收代扣方式还款
     HttpResponse httpResponse2 = null;
@@ -110,15 +124,20 @@ public class SsjJd007TC extends Stages4551TestCase {
       httpResponse2 = repaymentFactory
           .collectionWithhold(Integer.valueOf(userId), (long) secondRepaymentSchedule.getId());
     } finally {
-      //判断是否需要恢复银行原来的限额
-      if (needRestore) {
-        log.debug("恢复银行[{}]原来的日限额[{}]", bankId, dayAmountLimit);
-        //恢复日限额
-        super.setDayAmountLimit(String.valueOf(bankId), dayAmountLimit, payChannelCode);
-        //删除Redis缓存
-        super.cleanRedis();
-        //恢复了日限额后，重新置为false
-        needRestore = false;
+      try {
+        //判断是否需要恢复银行原来的限额
+        if (needRestore) {
+          log.debug("恢复银行[{}]原来的日限额[{}]", bankId, dayAmountLimit);
+          //恢复日限额
+          super.setDayAmountLimit(String.valueOf(bankId), dayAmountLimit, payChannelCode);
+          //删除Redis缓存
+          super.cleanRedis();
+          //恢复了日限额后，重新置为false
+          needRestore = false;
+        }
+      } finally {
+        //恢复被修改过的支付通道
+        super.recoverPayPlatform(payPlatformList);
       }
     }
     String result2 = httpResponse2.getContent();
