@@ -545,6 +545,9 @@ public class RepaymentTestCase extends PaymentTestCase {
     String configKey = "router.env.version";
     this.routerEnvVersion = superdiamondService.getConfigValue(configKey);
     logger.debug("配置[{}]的值为[{}]", configKey, this.routerEnvVersion);
+    ThreadUtil.sleep();
+    //返回主页
+    superdiamondService.gotoIndexPage();
     return this.routerEnvVersion;
   }
 
@@ -556,12 +559,8 @@ public class RepaymentTestCase extends PaymentTestCase {
    * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   public List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes) {
-    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
-    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
-        .findByVersion(getRouterEnvVersion());
     //ban
-    payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
-    return payPlatformEntityList;
+    return payOperationService.banOtherPayPlatformByCode(codes, getRouterEnvVersion());
   }
 
 
@@ -572,23 +571,20 @@ public class RepaymentTestCase extends PaymentTestCase {
    * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   public List<PayPlatformEntity> banPayPlatformByCode(String[] codes) {
-    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
-    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
-        .findByVersion(getRouterEnvVersion());
     //ban
-    payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
-    return payPlatformEntityList;
+    return payOperationService.banPayPlatformByCode(codes, getRouterEnvVersion());
   }
 
 
   /**
    * 方法功能描述: 还原支付通道状态
    *
-   * @param payPlatformEntityList List<PayPlatformEntity>
+   * @param list List<PayPlatformEntity>
    * @return void
    */
-  public void recoverPayPlatform(List<PayPlatformEntity> payPlatformEntityList) {
-    payPlatformDao.save(payPlatformEntityList);
+  public void recoverPayPlatform(List<PayPlatformEntity> list) {
+    //还原被修改的支付通道状态
+    payOperationService.recoverPayPlatform(list);
   }
 
 

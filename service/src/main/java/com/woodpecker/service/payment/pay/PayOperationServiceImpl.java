@@ -9,6 +9,7 @@ import com.woodpecker.entity.payment.PayGroupEntity;
 import com.woodpecker.entity.payment.PayGroupPlatformEntity;
 import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.xujinjian.Commons.Lang.StringUtil;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,17 +95,20 @@ public class PayOperationServiceImpl implements PayOperationService {
         .findByVersionAndPayGroupNameAndPayPlatformName(version, payGroupName, payPlatformName);
   }
 
+
   /**
    * 方法功能描述: 禁用除指定的支付通道外的通道
    *
-   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
-   * @return void
+   * @param version version
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   @Transactional(value = "paymentTransactionManager")
   @Override
-  public void banOtherPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList,
-      String[] codes) {
+  public List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes, String version) {
+    List<PayPlatformEntity> list = new ArrayList<>();
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao.findByVersion(version);
     //禁用除指定支付通道外的通道
     for (PayPlatformEntity payPlatformEntity : payPlatformEntityList) {
       for (String code : codes) {
@@ -112,9 +116,14 @@ public class PayOperationServiceImpl implements PayOperationService {
         String c = payPlatformEntity.getCode();
         int status = payPlatformEntity.getStatus();
         if (StringUtil.equals(c, code)) {
+          //是指定的支付通道
           //判断支付通道是否启用
           if (status == 0) {
             //通道被禁用，把通道启用起来
+            PayPlatformEntity bak = new PayPlatformEntity();
+            BeanUtils.copyProperties(payPlatformEntity, bak);
+            list.add(bak);
+            //
             PayPlatformEntity entity = new PayPlatformEntity();
             BeanUtils.copyProperties(payPlatformEntity, entity);
             entity.setStatus((byte) 1);
@@ -125,6 +134,10 @@ public class PayOperationServiceImpl implements PayOperationService {
           //判断是否被禁用
           if (status == 1) {
             //通道处于启用状态，禁用它
+            PayPlatformEntity bak = new PayPlatformEntity();
+            BeanUtils.copyProperties(payPlatformEntity, bak);
+            list.add(bak);
+            //
             PayPlatformEntity entity = new PayPlatformEntity();
             BeanUtils.copyProperties(payPlatformEntity, entity);
             entity.setStatus((byte) 0);
@@ -133,19 +146,23 @@ public class PayOperationServiceImpl implements PayOperationService {
         }
       }
     }
+    return list;
   }
 
 
   /**
    * 方法功能描述: 禁用指定的支付通道
    *
-   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
-   * @return void
+   * @param version version
+   * @return List<PayPlatformEntity>
    */
   @Transactional(value = "paymentTransactionManager")
   @Override
-  public void banPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList, String[] codes) {
+  public List<PayPlatformEntity> banPayPlatformByCode(String[] codes, String version) {
+    List<PayPlatformEntity> list = new ArrayList<>();
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao.findByVersion(version);
     //禁用除指定支付通道外的通道
     for (PayPlatformEntity payPlatformEntity : payPlatformEntityList) {
       for (String code : codes) {
@@ -156,6 +173,10 @@ public class PayOperationServiceImpl implements PayOperationService {
           //判断支付通道是否启用
           if (status == 1) {
             //通道处于启用状态，禁用它
+            PayPlatformEntity bak = new PayPlatformEntity();
+            BeanUtils.copyProperties(payPlatformEntity, bak);
+            list.add(bak);
+            //
             PayPlatformEntity entity = new PayPlatformEntity();
             BeanUtils.copyProperties(payPlatformEntity, entity);
             entity.setStatus((byte) 0);
@@ -164,6 +185,20 @@ public class PayOperationServiceImpl implements PayOperationService {
         }
       }
     }
+    return list;
+  }
+
+
+  /**
+   * 方法功能描述: 还原支付通道状态
+   *
+   * @param list List<PayPlatformEntity>
+   * @return void
+   */
+  @Transactional(value = "paymentTransactionManager")
+  @Override
+  public void recoverPayPlatform(List<PayPlatformEntity> list) {
+    payPlatformDao.save(list);
   }
 
 

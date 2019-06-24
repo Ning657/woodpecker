@@ -63,20 +63,30 @@ public interface PayOperationService {
   /**
    * 方法功能描述: 禁用除指定的支付通道外的通道
    *
-   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
-   * @return void
+   * @param version version
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
-  void banOtherPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList, String[] codes);
+  List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes, String version);
 
 
   /**
    * 方法功能描述: 禁用指定的支付通道
    *
-   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
+   * @param version version
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
+   */
+  List<PayPlatformEntity> banPayPlatformByCode(String[] codes, String version);
+
+
+  /**
+   * 方法功能描述: 还原支付通道状态
+   *
+   * @param list List<PayPlatformEntity>
    * @return void
    */
-  void banPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList, String[] codes);
+  void recoverPayPlatform(List<PayPlatformEntity> list);
+
 
 }

@@ -44,18 +44,16 @@ public class C extends RepaymentTestCase {
   @Test
   public void test1() {
     System.out.println("C Test1");
-    List<PayPlatformEntity> bakPayPlatforms = null;
+    List<PayPlatformEntity> list = null;
     try {
       String[] codes = {"62"};
-      bakPayPlatforms = super.banOtherPayPlatformByCode(codes);
+      list = super.banPayPlatformByCode(codes);
     } finally {
-      if (null != bakPayPlatforms) {
-        super.recoverPayPlatform(bakPayPlatforms);
+      System.out.println(list);
+      if (null != list) {
+        super.recoverPayPlatform(list);
       }
     }
-
-
-
   }
 
   @Test
