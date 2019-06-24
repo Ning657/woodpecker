@@ -559,8 +559,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   public List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes) {
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
+        .findByVersion(getRouterEnvVersion());
     //ban
-    return payOperationService.banOtherPayPlatformByCode(codes, getRouterEnvVersion());
+    return payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
   }
 
 
@@ -571,8 +574,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   public List<PayPlatformEntity> banPayPlatformByCode(String[] codes) {
+    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
+    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao
+        .findByVersion(getRouterEnvVersion());
     //ban
-    return payOperationService.banPayPlatformByCode(codes, getRouterEnvVersion());
+    return payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
   }
 
 

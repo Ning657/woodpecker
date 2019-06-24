@@ -8,8 +8,8 @@ import com.woodpecker.entity.payment.PayChannelEntity;
 import com.woodpecker.entity.payment.PayGroupEntity;
 import com.woodpecker.entity.payment.PayGroupPlatformEntity;
 import com.woodpecker.entity.payment.PayPlatformEntity;
-import com.xujinjian.Commons.Lang.StringUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,93 +99,92 @@ public class PayOperationServiceImpl implements PayOperationService {
   /**
    * 方法功能描述: 禁用除指定的支付通道外的通道
    *
+   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
-   * @param version version
    * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   @Transactional(value = "paymentTransactionManager")
   @Override
-  public List<PayPlatformEntity> banOtherPayPlatformByCode(String[] codes, String version) {
+  public List<PayPlatformEntity> banOtherPayPlatformByCode(
+      List<PayPlatformEntity> payPlatformEntityList, String[] codes) {
     List<PayPlatformEntity> list = new ArrayList<>();
-    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
-    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao.findByVersion(version);
+    List<String> codeList = new ArrayList<>(Arrays.asList(codes));
     //禁用除指定支付通道外的通道
     for (PayPlatformEntity payPlatformEntity : payPlatformEntityList) {
-      for (String code : codes) {
-        //判断是否是指定的支付通道
-        String c = payPlatformEntity.getCode();
-        int status = payPlatformEntity.getStatus();
-        if (StringUtil.equals(c, code)) {
-          //是指定的支付通道
-          //判断支付通道是否启用
-          if (status == 0) {
-            //通道被禁用，把通道启用起来
-            PayPlatformEntity bak = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, bak);
-            list.add(bak);
-            //
-            PayPlatformEntity entity = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, entity);
-            entity.setStatus((byte) 1);
-            payPlatformDao.save(entity);
-          }
-        } else {
-          //是指定支付通道外的通道
-          //判断是否被禁用
-          if (status == 1) {
-            //通道处于启用状态，禁用它
-            PayPlatformEntity bak = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, bak);
-            list.add(bak);
-            //
-            PayPlatformEntity entity = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, entity);
-            entity.setStatus((byte) 0);
-            payPlatformDao.save(entity);
-          }
+      //判断是否是指定的支付通道
+      String code = payPlatformEntity.getCode();
+      int status = payPlatformEntity.getStatus();
+      if (codeList.contains(code)) {
+        //是指定的支付通道
+        //判断支付通道是否启用
+        if (status == 0) {
+          //通道被禁用，把通道启用起来
+          PayPlatformEntity bak = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, bak);
+          list.add(bak);
+          //
+          PayPlatformEntity entity = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, entity);
+          entity.setStatus((byte) 1);
+          payPlatformDao.save(entity);
+        }
+      } else {
+        //不是指定支付通道
+        //判断是否被禁用
+        if (status == 1) {
+          //通道处于启用状态，禁用它
+          PayPlatformEntity bak = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, bak);
+          list.add(bak);
+          //
+          PayPlatformEntity entity = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, entity);
+          entity.setStatus((byte) 0);
+          payPlatformDao.save(entity);
         }
       }
     }
     return list;
+    //return delRepetition(list);
   }
 
 
   /**
    * 方法功能描述: 禁用指定的支付通道
    *
+   * @param payPlatformEntityList List<PayPlatformEntity>
    * @param codes code
-   * @param version version
-   * @return List<PayPlatformEntity>
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
    */
   @Transactional(value = "paymentTransactionManager")
   @Override
-  public List<PayPlatformEntity> banPayPlatformByCode(String[] codes, String version) {
+  public List<PayPlatformEntity> banPayPlatformByCode(List<PayPlatformEntity> payPlatformEntityList,
+      String[] codes) {
     List<PayPlatformEntity> list = new ArrayList<>();
-    //先查询原来的支付通道状态，因为后面测完之后，需要还原的
-    List<PayPlatformEntity> payPlatformEntityList = payPlatformDao.findByVersion(version);
+    List<String> codeList = new ArrayList<>(Arrays.asList(codes));
     //禁用除指定支付通道外的通道
     for (PayPlatformEntity payPlatformEntity : payPlatformEntityList) {
-      for (String code : codes) {
-        //判断是否是指定的支付通道
-        String c = payPlatformEntity.getCode();
-        int status = payPlatformEntity.getStatus();
-        if (StringUtil.equals(c, code)) {
-          //判断支付通道是否启用
-          if (status == 1) {
-            //通道处于启用状态，禁用它
-            PayPlatformEntity bak = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, bak);
-            list.add(bak);
-            //
-            PayPlatformEntity entity = new PayPlatformEntity();
-            BeanUtils.copyProperties(payPlatformEntity, entity);
-            entity.setStatus((byte) 0);
-            payPlatformDao.save(entity);
-          }
+      //判断是否是指定的支付通道
+      String code = payPlatformEntity.getCode();
+      int status = payPlatformEntity.getStatus();
+      if (codeList.contains(code)) {
+        //是指定的支付通道
+        //判断支付通道是否启用
+        if (status == 1) {
+          //通道处于启用状态，禁用它
+          PayPlatformEntity bak = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, bak);
+          list.add(bak);
+          //
+          PayPlatformEntity entity = new PayPlatformEntity();
+          BeanUtils.copyProperties(payPlatformEntity, entity);
+          entity.setStatus((byte) 0);
+          payPlatformDao.save(entity);
         }
       }
     }
     return list;
+    //return delRepetition(list);
   }
 
 
@@ -199,6 +198,26 @@ public class PayOperationServiceImpl implements PayOperationService {
   @Override
   public void recoverPayPlatform(List<PayPlatformEntity> list) {
     payPlatformDao.save(list);
+  }
+
+
+  /**
+   * 方法功能描述: 去重
+   *
+   * @param list List<PayPlatformEntity>
+   * @return java.util.List<com.woodpecker.entity.payment.PayPlatformEntity>
+   */
+  private List<PayPlatformEntity> delRepetition(List<PayPlatformEntity> list) {
+    List<Integer> lists = new ArrayList<>();
+    List<PayPlatformEntity> result = new ArrayList<>();
+    for (PayPlatformEntity entity : list) {
+      int id = entity.getId();
+      if (!lists.contains(id)) {
+        lists.add(id);
+        result.add(entity);
+      }
+    }
+    return result;
   }
 
 

@@ -46,10 +46,9 @@ public class C extends RepaymentTestCase {
     System.out.println("C Test1");
     List<PayPlatformEntity> list = null;
     try {
-      String[] codes = {"62"};
+      String[] codes = {"2", "10", "15", "48"};
       list = super.banPayPlatformByCode(codes);
     } finally {
-      System.out.println(list);
       if (null != list) {
         super.recoverPayPlatform(list);
       }
@@ -59,6 +58,16 @@ public class C extends RepaymentTestCase {
   @Test
   public void test2() {
     System.out.println("C Test2");
+    List<PayPlatformEntity> list = null;
+    try {
+      String[] codes = {"60", "61"};
+      //String[] codes = {"2", "10", "15", "48"};
+      list = super.banOtherPayPlatformByCode(codes);
+    } finally {
+      if (null != list) {
+        super.recoverPayPlatform(list);
+      }
+    }
   }
 
   @AfterSuite
