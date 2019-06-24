@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.testcase.payment.repayment.RepaymentTestCase;
+import com.xujinjian.Commons.Lang.ThreadUtil;
 import com.xujinjian.HttpClient.HttpResponse;
 import com.xujinjian.Json.JsonUtil;
 import java.math.BigDecimal;
@@ -125,6 +126,8 @@ public class BaoYinInterior7901TC extends RepaymentTestCase {
     String payNo1 = data1.getString("payNo");
     Assert.assertEquals(code1, "0000", "校验发送催收代扣接口是否成功");
     Assert.assertEquals(message1, "请求成功", "校验发送催收代扣接口是否成功");
+    //等待X秒，给后台足够的入账时间
+    ThreadUtil.sleep(super.recordedTime);
     //还款后校验
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
     Byte payWay1 = 12;

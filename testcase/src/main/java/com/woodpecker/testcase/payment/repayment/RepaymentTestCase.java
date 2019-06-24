@@ -73,6 +73,11 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected BigDecimal upAmount = new BigDecimal(1000);
 
+  /**
+   * 等待入账时间，3秒
+   */
+  protected int recordedTime = 3;
+
   
   /**
    * 方法功能描述: 删除用户名下的订单

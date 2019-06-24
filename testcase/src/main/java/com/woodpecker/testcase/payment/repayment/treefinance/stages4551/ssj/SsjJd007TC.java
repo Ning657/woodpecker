@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.testcase.payment.repayment.treefinance.stages4551.Stages4551TestCase;
+import com.xujinjian.Commons.Lang.ThreadUtil;
 import com.xujinjian.HttpClient.HttpResponse;
 import com.xujinjian.Json.JsonUtil;
 import java.math.BigDecimal;
@@ -132,6 +133,8 @@ public class SsjJd007TC extends Stages4551TestCase {
     String payNo2 = data2.getString("payNo");
     Assert.assertEquals(code2, "0000", "校验发送催收代扣接口是否成功");
     Assert.assertEquals(message2, "请求成功", "校验发送催收代扣接口是否成功");
+    //等待X秒，给后台足够的入账时间
+    ThreadUtil.sleep(super.recordedTime);
     //还款后校验
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
     BigDecimal amount2 = secondRepaymentSchedule.getAmount();
