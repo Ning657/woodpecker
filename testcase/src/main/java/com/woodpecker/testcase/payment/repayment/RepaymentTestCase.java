@@ -386,6 +386,47 @@ public class RepaymentTestCase extends BindCardTestCase {
    * @param topic topic
    * @param payNo payNo
    * @param userId userId
+   * @param loanOrderId loanOrderId
+   * @return void
+   */
+  public void checkMQ(String topic, String payNo, String userId, String loanOrderId) {
+    //MQ check
+    boolean flag = false;
+    List<JSONObject> jsonObjectList = mqService.queryMessageByTopic(2, topic);
+    for (JSONObject json : jsonObjectList) {
+      String msgId = json.getString("msgId");
+      JSONObject msgJsonObject = mqService.queryMessageByMsgId(msgId, topic);
+      JSONArray array = msgJsonObject.getJSONArray("messageTrackList");
+      if (array.size() > 0) {
+        JSONObject j = array.getJSONObject(0);
+        String consumerGroup = j.getString("consumerGroup");
+        boolean f = StringUtil.equalsIgnoreCase("accounting", consumerGroup);
+        if (f) {
+          JSONObject s = msgJsonObject.getJSONObject("messageView");
+          JSONObject messageBody = s.getJSONObject("messageBody");
+          String payNoA = messageBody.getString("payNo");
+          String userIdA = messageBody.getString("userId");
+          String loanOrderIdList = messageBody.getString("loanOrderIdList");
+          if (StringUtil.equals(payNoA, payNo) && StringUtil.equals(userIdA, userId) &&
+              StringUtil.contains(loanOrderIdList, loanOrderId)) {
+            log.debug("找到发出去的MQ=[{}]", msgJsonObject);
+            flag = true;
+            break;
+          }
+        }
+      }
+    }
+    Validate.isTrue(flag, "校验是否向accounting发送MQ消息");
+  }
+
+
+
+  /**
+   * 方法功能描述: 校验MQ是否发送成功
+   *
+   * @param topic topic
+   * @param payNo payNo
+   * @param userId userId
    * @param scheduleId scheduleId
    * @return void
    */

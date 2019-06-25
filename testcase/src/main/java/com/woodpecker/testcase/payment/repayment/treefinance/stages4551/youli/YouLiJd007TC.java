@@ -79,22 +79,24 @@ public class YouLiJd007TC extends Stages4551TestCase {
   }
 
 
-  @Test(description = "还款方式-->催收代扣")
-  public void collectionWithhold() {
+  /**
+   * 提前还未来期(整期)，是走有利的；部分还款时，是走大树4551的。催收充值，都是走大树4551的。
+   */
+  @Test(description = "还款方式-->催收充值")
+  public void collectionRecharge() {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
     //判断银行卡是否已鉴权，如果没有鉴权，则先执行鉴权操作
-    super.bindCard(loanOrderId, null, null);
-    //将第一期还款计划置为已结清
-    super.clearRepaymentSchedule(Integer.parseInt(loanOrderId), (byte) 1);
-    //此时还第二期，就是提前还未来期，走的是「京东007」42
-    //对第二期进行还款
+    super.bindCard(loanOrderId, "62", "YOOLI_PAY");
+    //将趸交计划置为已结清
+    super.clearSinglePremiumSchedule(Integer.parseInt(loanOrderId));
+    //对订单进行还款
     //修改用户的支付渠道
     //super.updateUserPayChannelConfig(channel);//可以不用指定支付通道，因为就应该走这个通道，所以不用指定
-    //第二期
+    //第一期
     RepaymentScheduleEntity secondRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
+        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
     //注意点：需要看下银行限额，如果超过限额，则需要调大限额金额
     //获取出bankId
     Integer bankId = super.getBankId(Integer.parseInt(loanOrderId));
@@ -123,8 +125,10 @@ public class YouLiJd007TC extends Stages4551TestCase {
     //通过催收代扣方式还款
     HttpResponse httpResponse2 = null;
     try {
+      String cardNo = super.getCardNo(Integer.parseInt(loanOrderId));
       httpResponse2 = repaymentFactory
-          .collectionWithhold(Integer.valueOf(userId), (long) secondRepaymentSchedule.getId());
+          .collectionRecharge(Long.parseLong(loanOrderId), Long.parseLong(cardNo),
+              System.currentTimeMillis(), amount1);
     } finally {
       try {
         //判断是否需要恢复银行原来的限额
@@ -158,7 +162,7 @@ public class YouLiJd007TC extends Stages4551TestCase {
     ThreadUtil.sleep(super.recordedTime);
     //还款后校验
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
-    BigDecimal amount2 = secondRepaymentSchedule.getAmount().subtract(BigDecimal.valueOf(1));
+    BigDecimal amount2 = secondRepaymentSchedule.getAmount();
     //PayWay原本应该是6，但因为我是直接指定了用户的支付通道，把长剑生成的PayWay=6覆盖掉了。所以暂时要么不校验这个PayWay，或者校验PayWay=99
     Byte payWay2 = 6;
     Byte payPlatform2 = 42;
@@ -167,11 +171,10 @@ public class YouLiJd007TC extends Stages4551TestCase {
     super.checkTradeOrder(tradeNo2, Integer.valueOf(userId), amount2, payWay2, payPlatform2,
         channel2, isDeprecated2);
     //校验点2：是否发送topic:recharge的MQ，通知账务入账
-    int repaymentScheduleId2 = secondRepaymentSchedule.getId();
-    super.checkMQ(topic, payNo2, userId, repaymentScheduleId2);
+    super.checkMQ(topic, payNo2, userId, loanOrderId);
     //校验点3：t_repayment_schedule表是否 已还
     secondRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("2"));
+        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
     super.checkRepaymentSchedule(secondRepaymentSchedule);
     //校验点4：t_tp_transaction表的platId、tranStatus
     super.checkTransaction(tradeNo2, userId, payPlatform2);
