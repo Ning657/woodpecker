@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
  * @author: jinjianxu
  * @since: 1.0
  */
-public class BaoYinTonglianTC extends Stages4551TestCase {
+public class BaoYinTongLianTC extends Stages4551TestCase {
 
   /**
    * 用例的支付渠道，60（不可改）

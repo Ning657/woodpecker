@@ -1,4 +1,4 @@
-package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.ssj;
+package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.mnw;
 
 import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
@@ -19,37 +19,37 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- * 类描述:〈随手记走京东两方代扣007(JDAGREEMENTPAY_4551)，通道42〉
+ * 类描述:〈玛瑙湾走通联协议支付，通道60〉
  *
  * @author: jinjianxu
  * @since: 1.0
  */
-public class SsjJd007TC extends Stages4551TestCase {
+public class MnwTongLianTC extends Stages4551TestCase {
 
   /**
-   * 用例的支付渠道，京东007 - 42（不可改）
+   * 用例的支付渠道，60（不可改）
    */
-  //protected int channel = 42;
+  //protected int channel = 60;
 
-  protected String payChannel2 = "JDAGREEMENTPAY_4551";
+  protected String payChannel2 = "ALL_IN_PAY";
 
   /**
-   * 资金渠道，指定为随手记渠道，不可改
+   * 资金渠道，指定为玛瑙湾渠道，不可改
    */
-  private final PlatformIdEnum platformIdEnum = PlatformIdEnum.SSJ;
+  private final PlatformIdEnum platformIdEnum = PlatformIdEnum.MNW;
 
-  protected String version = "4";
+  protected String version = "2";
 
   private String orderId;
 
   private String loanOrderId;
 
-  private String payChannelCode = "JD";
+  private String payChannelCode = "ALL_IN";
 
   /**
    * 需要禁用的支付通道code
    */
-  String[] codes = {"60"};
+  String[] codes = {"42"};
 
   /**
    * 被修改过的支付通道
@@ -61,7 +61,7 @@ public class SsjJd007TC extends Stages4551TestCase {
   public void ready() {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
     super.deleteUserPayChannelConfig();
-    //mock京东(007-4551)
+    //mock通联
     super.mockChannel(payChannel2);
     //删除Redis缓存
     super.cleanRedis();
@@ -85,10 +85,10 @@ public class SsjJd007TC extends Stages4551TestCase {
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
     //判断银行卡是否已鉴权，如果没有鉴权，则先执行鉴权操作
-    super.bindCard(loanOrderId, null, null);
+    super.bindCard(loanOrderId, "60", "ALL_IN_PAY");
     //将第一期还款计划置为已结清
     super.clearRepaymentSchedule(Integer.parseInt(loanOrderId), (byte) 1);
-    //此时还第二期，就是提前还未来期，走的是「京东007」42
+    //此时还第二期，就是提前还未来期，走的是「通联协议支付」60
     //对第二期进行还款
     //修改用户的支付渠道
     //super.updateUserPayChannelConfig(channel);//可以不用指定支付通道，因为就应该走这个通道，所以不用指定
@@ -117,7 +117,7 @@ public class SsjJd007TC extends Stages4551TestCase {
       //需要恢复银行原来的限额
       needRestore = true;
     }
-    //禁用通联，如果不禁用通联，则会有一定的概率会去走通联
+    //禁用京东，如果不禁用京东，则会有一定的概率会去走京东
     payPlatformList = super.banPayPlatformByCode(codes);
     //对第二期进行还款
     //通过催收代扣方式还款
@@ -159,10 +159,10 @@ public class SsjJd007TC extends Stages4551TestCase {
     //还款后校验
     //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
     BigDecimal amount2 = secondRepaymentSchedule.getAmount();
-    //PayWay原本应该是6，但因为我是直接指定了用户的支付通道，把长剑生成的PayWay=6覆盖掉了。所以暂时要么不校验这个PayWay，或者校验PayWay=99
+    //PayWay原本应该是6，但因为我是直接指定了用户的支付通道，把长剑生成的PayWay=6覆盖掉了。所以暂时要么不校验这个PayWay，或者PayWay=99
     Byte payWay2 = 6;
-    Byte payPlatform2 = 42;
-    String channel2 = "102";
+    Byte payPlatform2 = 60;
+    String channel2 = "60";
     Byte isDeprecated2 = 0;
     super.checkTradeOrder(tradeNo2, Integer.valueOf(userId), amount2, payWay2, payPlatform2,
         channel2, isDeprecated2);
