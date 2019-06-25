@@ -29,7 +29,7 @@ public class XingRuiJd007TC extends Stages4551TestCase {
   /**
    * 用例的支付渠道，京东007 - 42（不可改）
    */
-  protected int channel = 42;
+  //protected int channel = 42;
 
   protected String payChannel2 = "JDAGREEMENTPAY_4551";
 
@@ -84,6 +84,8 @@ public class XingRuiJd007TC extends Stages4551TestCase {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
+    //判断银行卡是否已鉴权，如果没有鉴权，则先执行鉴权操作
+    super.bindCard(loanOrderId, null, null);
     //兴睿信托没有体内还款，全部都走大树4551，需要不需要先将第一期置为已结清，再去还第二期，直接还第一期即可。
     //将第一期还款计划置为已结清
     //super.clearRepaymentSchedule(Integer.parseInt(loanOrderId), (byte) 1);

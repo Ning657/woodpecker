@@ -1,5 +1,6 @@
 package com.woodpecker.testcase.payment.bindcard;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sword.autotest.framework.assertion.Validate;
 import com.woodpecker.dao.loandb.BankAccountDao;
 import com.woodpecker.dao.loandb.CustInfoDao;
@@ -18,6 +19,10 @@ import com.woodpecker.service.databuild.DataBuildOrderService;
 import com.woodpecker.service.payment.trade.BindCardService;
 import com.woodpecker.service.pub.DataAnalysisService;
 import com.woodpecker.testcase.payment.PaymentTestCase;
+import com.xujinjian.HttpClient.HttpResponse;
+import com.xujinjian.Json.JsonUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
@@ -143,6 +148,80 @@ public class BindCardTestCase extends PaymentTestCase {
       loanOrderEntity.setBankAccountId(bankAccountId);
       //update
       loanOrderDao.saveAndFlush(loanOrderEntity);
+    }
+  }
+
+
+  /**
+   * 方法功能描述: 鉴权(给支付过程中，判断是否已鉴权环节专用的方法，如果鉴权/绑卡用例有修改，需同步更新此方法)
+   *
+   * @param loanOrderId loanOrderId
+   * @param channel channel(就是rt_pay_platform表的code字段值),如：40
+   * @param deductPlatform 需要鉴权的平台(就是rt_pay_platform表的name字段值),如：JDAGREEMENTPAY
+   * @return void
+   */
+  public void bindCard(String loanOrderId, String channel, String deductPlatform) {
+    if (null == deductPlatform || deductPlatform.length() == 0) {
+      deductPlatform = "JDAGREEMENTPAY";
+    }
+    if (null == channel || channel.length() == 0) {
+      channel = "40";
+    }
+    //获取t_loan_order表的BankAccountId
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(Integer.parseInt(loanOrderId));
+    Long bankAccountId = loanOrderEntity.getBankAccountId();
+    //判断是否已鉴权
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue());
+    Assert.assertEquals((byte) bankAccountEntity.getStatus(), (byte) 1, "校验银行卡状态是否正常");
+    //获取出t_bank_account表的Channel
+    String tChannel = bankAccountEntity.getChannel();
+    tChannel = tChannel.substring(1, tChannel.length() - 1).replaceAll("\"", "");
+    List<String> channels = new ArrayList<>(Arrays.asList(tChannel.split(",")));
+    //判断是否已鉴权，判断channel是否包含
+    if (!channels.contains(channel)) {
+      //未鉴权，接下去要进行鉴权操作
+      log.debug("channel=[{}]未鉴权,bankAccountEntity=[{}]", channel, bankAccountEntity);
+      log.debug("deductPlatform=[{}]", deductPlatform);
+      String bankId = "" + bankAccountEntity.getBankId();
+      String idCardNo = "" + bankAccountEntity.getCertificateNo();
+      String userName = "" + bankAccountEntity.getName();
+      String mobile = "" + bankAccountEntity.getMobile();
+      String cardNo = "" + bankAccountEntity.getAccount();
+      String code = "123456";
+      idCardNo = dataAnalysisService.aesDecrypt(idCardNo);
+      mobile = dataAnalysisService.aesDecrypt(mobile);
+      cardNo = dataAnalysisService.aesDecrypt(cardNo);
+      log.debug("bankId=[{}];idCardNo=[{}];userName=[{}];mobile=[{}];cardNo=[{}]", bankId, idCardNo,
+          userName, mobile, cardNo);
+      //先请求绑卡
+      HttpResponse httpResponse = bindCardService
+          .requestBindCard(deductPlatform, bankId, idCardNo, userName, mobile, cardNo, "", "\"\"",
+              "");
+      //获取出data
+      String content = httpResponse.getContent();
+      logger.debug("请求绑卡返回的内容为[{}]", content);
+      JSONObject json = JsonUtil.parseObject(content);
+      //校验
+      validateBindCardResponse(json.getString("code"), json.getString("message"));
+      String data = json.getString("data");
+      //确认绑卡
+      httpResponse = bindCardService
+          .sureBindCard(mobile, bankId, userId, code, idCardNo, data, cardNo, "", "", "\"\"");
+      //获取出data，这个data就是t_bank_account表的id
+      content = httpResponse.getContent();
+      logger.debug("确认绑卡返回的内容为[{}]", content);
+      json = JsonUtil.parseObject(content);
+      //校验
+      validateBindCardResponse(json.getString("code"), json.getString("message"));
+      //保存bankAccountId，后续要校验
+      String bankAccountId2 = json.getString("data");
+      //校验数据库表字段
+      String bindId = "\"" + channel + "\":\"" + data + "\"";
+      String channel2 = "\"" + channel + "\"";
+      checkBindCardTables(data, bankAccountId2, bindId, channel2);
+    } else {
+      //京东已鉴权
+      log.debug("channel=[{}]已鉴权,bankAccountEntity=[{}]", channel, bankAccountEntity);
     }
   }
 

@@ -18,7 +18,7 @@ import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.service.payment.cache.RedisCacheFactory;
 import com.woodpecker.service.payment.pay.PayOperationService;
 import com.woodpecker.service.pub.MQService;
-import com.woodpecker.testcase.payment.PaymentTestCase;
+import com.woodpecker.testcase.payment.bindcard.BindCardTestCase;
 import com.xujinjian.Commons.Lang.StringUtil;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ import org.testng.Assert;
  * @author: jinjianxu
  * @since: 1.0
  */
-public class RepaymentTestCase extends PaymentTestCase {
+public class RepaymentTestCase extends BindCardTestCase {
 
   @Autowired
   protected RedisCacheFactory redisCacheFactory;
@@ -78,12 +78,7 @@ public class RepaymentTestCase extends PaymentTestCase {
    */
   protected int recordedTime = 3;
 
-  /**
-   * 等待被修改过的支付通道生效时间，3秒
-   */
-  protected int payPlatformTime = 3;
 
-  
   /**
    * 方法功能描述: 删除用户名下的订单
    *
@@ -571,7 +566,7 @@ public class RepaymentTestCase extends PaymentTestCase {
     List<PayPlatformEntity> list = payOperationService
         .banOtherPayPlatformByCode(payPlatformEntityList, codes);
     //等待X秒，让刚修改完的通道生效
-    ThreadUtil.sleep(payPlatformTime);
+    ThreadUtil.sleep(3);
     //return payOperationService.banOtherPayPlatformByCode(payPlatformEntityList, codes);
     return list;
   }
@@ -591,7 +586,7 @@ public class RepaymentTestCase extends PaymentTestCase {
     List<PayPlatformEntity> list = payOperationService
         .banPayPlatformByCode(payPlatformEntityList, codes);
     //等待X秒，让刚修改完的通道生效
-    ThreadUtil.sleep(payPlatformTime);
+    ThreadUtil.sleep(3);
     //return payOperationService.banPayPlatformByCode(payPlatformEntityList, codes);
     return list;
   }
