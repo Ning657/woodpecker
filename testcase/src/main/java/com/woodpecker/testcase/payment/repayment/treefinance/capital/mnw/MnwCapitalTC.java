@@ -67,6 +67,8 @@ public class MnwCapitalTC extends RepaymentTestCase {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
     Assert.assertNotNull(orderId, "校验orderId是否为null");
     Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
+    //判断银行卡是否已鉴权，如果没有鉴权，则先执行鉴权操作
+    super.bindCard(loanOrderId, "52", "MNWPAY");
     //读取还款计划表的前面二期的还款计划
     //因为第一期是正常还款，走的是「玛瑙湾资金账户」，也就是「玛瑙湾 21」
     //第一期
