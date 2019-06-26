@@ -45,7 +45,7 @@ public class YouLiCapitalTC extends RepaymentTestCase {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
     super.deleteUserPayChannelConfig();
     //mock有利
-    //super.mockChannel(payChannel);
+    super.mockChannel(payChannel);
     //删除Redis缓存
     super.cleanRedis();
   }
