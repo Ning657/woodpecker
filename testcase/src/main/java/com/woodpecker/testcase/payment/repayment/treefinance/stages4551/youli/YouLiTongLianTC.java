@@ -122,7 +122,7 @@ public class YouLiTongLianTC extends Stages4551TestCase {
     //禁用京东，如果不禁用京东，则会有一定的概率会去走京东
     payPlatformList = super.banPayPlatformByCode(codes);
     //对第二期进行还款
-    //通过催收代扣方式还款
+    //通过催收充值方式还款
     HttpResponse httpResponse2 = null;
     try {
       String cardNo = super.getCardNo(Integer.parseInt(loanOrderId));
@@ -147,8 +147,8 @@ public class YouLiTongLianTC extends Stages4551TestCase {
       }
     }
     String result2 = httpResponse2.getContent();
-    log.debug("催收代扣接口返回-->[{}]", result2);
-    //判断催收代扣请求是否成功
+    log.debug("催收充值接口返回-->[{}]", result2);
+    //判断催收充值请求是否成功
     //将接口返回的内容转换成JSON
     JSONObject json2 = JsonUtil.parseObject(result2);
     String code2 = json2.getString("code");
@@ -156,8 +156,8 @@ public class YouLiTongLianTC extends Stages4551TestCase {
     JSONObject data2 = json2.getJSONObject("data");
     String tradeNo2 = data2.getString("tradeNo");
     String payNo2 = data2.getString("payNo");
-    Assert.assertEquals(code2, "0000", "校验发送催收代扣接口是否成功");
-    Assert.assertEquals(message2, "请求成功", "校验发送催收代扣接口是否成功");
+    Assert.assertEquals(code2, "0000", "校验发送催收充值接口是否成功");
+    Assert.assertEquals(message2, "请求成功", "校验发送催收充值接口是否成功");
     //等待X秒，给后台足够的入账时间
     ThreadUtil.sleep(super.recordedTime);
     //还款后校验

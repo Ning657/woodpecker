@@ -9,6 +9,7 @@ import com.woodpecker.dao.payment.PayPlatformDao;
 import com.woodpecker.entity.loandb.BankAccountEntity;
 import com.woodpecker.entity.loandb.LoanOrderEntity;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
+import com.woodpecker.entity.loandb.SinglePremiumScheduleEntity;
 import com.woodpecker.entity.loandb.TradeOrderEntity;
 import com.woodpecker.entity.payment.PayChannelBankEntity;
 import com.woodpecker.entity.payment.PayPlatformEntity;
@@ -471,6 +472,21 @@ public class RepaymentTestCase extends BindCardTestCase {
     Validate.isEquals(1, isClear, "校验t_repayment_schedule表的IsClear是否为1");
     Validate.isEquals(11, status, "校验t_repayment_schedule表的Status是否为11");
   }
+
+
+  /**
+   * 方法功能描述: 校验趸交计划
+   *
+   * @param singlePremiumScheduleEntity 趸交计划
+   * @return void
+   */
+  public void checkSinglePremiumSchedule(SinglePremiumScheduleEntity singlePremiumScheduleEntity) {
+    Byte cleared = singlePremiumScheduleEntity.getCleared();
+    Byte status = singlePremiumScheduleEntity.getStatus();
+    Validate.isEquals(1, cleared, "校验qs_single_premium_schedule表的cleared是否为1");
+    Validate.isEquals(11, status, "校验qs_single_premium_schedule表的status是否为11");
+  }
+
 
 
   /**

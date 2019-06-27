@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="趸交走中信4551" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="趸交走中信4451-京东">
+    <classes>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.baoyin.BaoYinPremiumJd007TC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.bohai.BoHaiPremiumJd007TC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.mnw.MnwPremiumJd007TC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.ssj.SsjPremiumJd007TC"/>
+      <!--<class-->
+      <!--name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.wangxin.WangXinPremiumJd007TC"/>-->
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.xizang.XiZangPremiumJd007TC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.premium4551.zxxd.ZxxdPremiumJd007TC"/>
+    </classes>
+  </test>
+</suite>
