@@ -194,18 +194,10 @@ public class PayPlatformEntity implements Serializable {
     return "PayPlatformEntity{" +
         "id=" + id +
         ", code='" + code + '\'' +
-        ", supportSources=" + supportSources +
-        ", bindCard=" + bindCard +
         ", status=" + status +
-        ", fee=" + fee +
         ", payChannelCode='" + payChannelCode + '\'' +
-        ", createDate=" + createDate +
-        ", updateDate=" + updateDate +
         ", version='" + version + '\'' +
         ", name='" + name + '\'' +
-        ", rtKey='" + rtKey + '\'' +
-        ", individualBizdata='" + individualBizdata + '\'' +
-        ", thirdpayInit='" + thirdpayInit + '\'' +
         ", platformName='" + platformName + '\'' +
         '}';
   }

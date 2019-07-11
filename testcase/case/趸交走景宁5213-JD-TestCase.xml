@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="趸交走景宁5213" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="趸交走景宁5213-京东">
+    <classes>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.jingning.premium5213.mnw.MnwPremiumJdTC"/>
+    </classes>
+  </test>
+</suite>

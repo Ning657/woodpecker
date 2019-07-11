@@ -28,6 +28,14 @@ public interface SuperdiamondService {
 
 
   /**
+   * 方法功能描述: 判断是否已经登录
+   *
+   * @return boolean
+   */
+  boolean isLogin();
+
+
+  /**
    * 方法功能描述: 搜索项目，如果当前不在首页，则会自行进入首页
    *
    * @param projectName 项目名称

@@ -105,6 +105,19 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
 
 
   /**
+   * 方法功能描述: 判断是否已经登录superdiamond
+   *
+   * @return boolean
+   */
+  @Override
+  public boolean isLogin() {
+    //判断项目搜索页面的注销超链接有没有显示出来，如果真正登录成功的话，是会显示的
+    return projectSearchPageObject.isDisplayLogoutHref();
+  }
+
+
+
+  /**
    * 方法功能描述: 搜索项目，如果当前不在首页，则会自行进入首页
    *
    * @param projectName 项目名称
@@ -438,4 +451,19 @@ public class SuperdiamondServiceImpl extends WebUIService implements Superdiamon
   }
 
 
+  public String getLoginUrl() {
+    return loginUrl;
+  }
+
+  public void setLoginUrl(String loginUrl) {
+    this.loginUrl = loginUrl;
+  }
+
+  public String getIndexUrl() {
+    return indexUrl;
+  }
+
+  public void setIndexUrl(String indexUrl) {
+    this.indexUrl = indexUrl;
+  }
 }

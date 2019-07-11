@@ -1,8 +1,6 @@
 package com.woodpecker.testcase.demo;
 
-import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.testcase.payment.repayment.RepaymentTestCase;
-import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -44,30 +42,11 @@ public class C extends RepaymentTestCase {
   @Test
   public void test1() {
     System.out.println("C Test1");
-    List<PayPlatformEntity> list = null;
-    try {
-      String[] codes = {"2", "10", "15", "48"};
-      list = super.banPayPlatformByCode(codes);
-    } finally {
-      if (null != list) {
-        super.recoverPayPlatform(list);
-      }
-    }
   }
 
   @Test
   public void test2() {
     System.out.println("C Test2");
-    List<PayPlatformEntity> list = null;
-    try {
-      String[] codes = {"60", "61"};
-      //String[] codes = {"2", "10", "15", "48"};
-      list = super.banOtherPayPlatformByCode(codes);
-    } finally {
-      if (null != list) {
-        super.recoverPayPlatform(list);
-      }
-    }
   }
 
   @AfterSuite

@@ -1,5 +1,8 @@
 package com.woodpecker.commons.util;
 
+import com.xujinjian.Commons.Collections.CollectionUtil;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,22 @@ public class RedisUtil {
       logger.error(e.getMessage(), e);
       return false;
     }
+  }
+
+
+  /**
+   * 方法功能描述: 模糊获取出key
+   *
+   * @param pattern pattern
+   * @return java.util.Set
+   */
+  public Set<String> keys(String pattern) {
+    Set<String> set = redisTemplate.keys(pattern);
+    //
+    if (CollectionUtil.isNotEmpty(set)) {
+      return set;
+    }
+    return new HashSet<>();
   }
 
 

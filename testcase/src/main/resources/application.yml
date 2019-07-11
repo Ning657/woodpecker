@@ -31,8 +31,8 @@ spring:
       enabled: always
   mail:
       host: smtp.exmail.qq.com
-      username: xujinjian@treefinance.com.cn  #这里填你的公司邮箱
-      password: 123456 #这里填你的公司邮箱密码
+      username: test@treefinance.com.cn  #这里填你的公司邮箱
+      password: dashu123 #这里填你的公司邮箱密码
       port: 25
       default-encoding: UTF-8
       properties:
@@ -44,17 +44,17 @@ spring:
               required: true
             #ssl:
             #  enable: true  #当port不是25时，则需启用这个配置
-  redis:
-    host: 121.43.177.8
-    port: 6379
-    password: dashu0701
-    timeout: 1000     #连接超时时间（毫秒）
-    database: 0       #Redis数据库索引（默认为0）
-    pool:
-      max-active: 2   #连接池最大连接数（使用负值表示没有限制）
-      max-wait: 100    #连接池最大阻塞等待时间（使用负值表示没有限制）
-      max-idle: 2     #连接池中的最大空闲连接
-      min-idle: 1     #连接池中的最小空闲连接
+  #redis:
+    #host: 121.43.177.8
+    #port: 6379
+    #password: dashu0701
+    #timeout: 1000     #连接超时时间（毫秒）
+    #database: 0       #Redis数据库索引（默认为0）
+    #pool:
+      #max-active: 2   #连接池最大连接数（使用负值表示没有限制）
+      #max-wait: 100    #连接池最大阻塞等待时间（使用负值表示没有限制）
+      #max-idle: 2     #连接池中的最大空闲连接
+      #min-idle: 1     #连接池中的最小空闲连接
 #####################自动化测试配置#####################
 autotest:
   api:

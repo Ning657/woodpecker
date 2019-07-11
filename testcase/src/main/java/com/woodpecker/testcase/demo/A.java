@@ -1,8 +1,10 @@
 package com.woodpecker.testcase.demo;
 
+import com.woodpecker.framework.repayment.RepaymentService;
 import com.woodpecker.testcase.TestCase;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -20,6 +22,9 @@ import org.testng.annotations.Test;
  * @since: 1.0
  */
 public class A extends TestCase {
+
+  @Autowired
+  RepaymentService repaymentService;
 
   @BeforeSuite
   public void beforeSutie() {

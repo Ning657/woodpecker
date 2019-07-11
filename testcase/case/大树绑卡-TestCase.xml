@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="大树绑卡" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="京东绑卡、通联绑卡">
+    <classes>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.jd.JdBindTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.tonglian.TlBindTC"/>
+    </classes>
+  </test>
+</suite>

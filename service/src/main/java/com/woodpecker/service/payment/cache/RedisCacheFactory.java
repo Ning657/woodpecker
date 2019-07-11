@@ -1,5 +1,8 @@
 package com.woodpecker.service.payment.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +22,28 @@ public class RedisCacheFactory {
   @Autowired
   private RedisCacheService redisCacheService;
 
-  private final String transaction = "TP-PAYMENT-TRANSACTION:MIN#10*";
+  static String transaction = "TP-PAYMENT-TRANSACTION:MIN#10*";
 
-  private final String trade = "TP-PAYMENT-TRADE:MIN#10*";
+  static String trade = "TP-PAYMENT-TRADE:MIN#10*";
 
-  private final String deduct = "LOAN_DEDUCT:MIN#10*";
+  static String deduct = "LOAN_DEDUCT:MIN#10*";
 
-  private final String router = "ROUTER_PLATFORM_*";
+  static String router = "ROUTER_PLATFORM_*";
 
-  private final String errorCount = "ERROR_COUNT_*";
+  static String errorCount = "ERROR_COUNT_*";
 
-  private final String userFailedCount = "*_*_USER_FAILED_COUNT_*";
+  static String userFailedCount = "*_*_USER_FAILED_COUNT_*";
+
+  static List<String> patterns = new ArrayList<>();
+
+  static {
+    patterns.add(transaction);
+    patterns.add(trade);
+    patterns.add(deduct);
+    patterns.add(router);
+    patterns.add(errorCount);
+    patterns.add(userFailedCount);
+  }
 
 
   /**
@@ -38,50 +52,16 @@ public class RedisCacheFactory {
    * @return void
    */
   public void delete() {
-    if (redisCacheService.hasCache(transaction)) {
-      redisCacheService.deleteCache(transaction);
+    for (String pattern : patterns) {
+      //模糊获取出key
+      Set<String> keys = redisCacheService.getKeys(pattern);
+      //遍历模糊匹配到的所有key
+      for (String key : keys) {
+        //删除key
+        redisCacheService.delete(key);
+      }
     }
-    if (redisCacheService.hasCache(trade)) {
-      redisCacheService.deleteCache(trade);
-    }
-    if (redisCacheService.hasCache(deduct)) {
-      redisCacheService.deleteCache(deduct);
-    }
-    if (redisCacheService.hasCache(router)) {
-      redisCacheService.deleteCache(router);
-    }
-    if (redisCacheService.hasCache(errorCount)) {
-      redisCacheService.deleteCache(errorCount);
-    }
-    if (redisCacheService.hasCache(userFailedCount)) {
-      redisCacheService.deleteCache(userFailedCount);
-    }
-    // redisCacheService.deleteCache(transaction, trade, deduct, router, errorCount, userFailedCount);
   }
 
-
-  public String getTransaction() {
-    return transaction;
-  }
-
-  public String getTrade() {
-    return trade;
-  }
-
-  public String getDeduct() {
-    return deduct;
-  }
-
-  public String getRouter() {
-    return router;
-  }
-
-  public String getErrorCount() {
-    return errorCount;
-  }
-
-  public String getUserFailedCount() {
-    return userFailedCount;
-  }
 
 }

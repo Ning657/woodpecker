@@ -1,5 +1,7 @@
 package com.woodpecker.service.payment.cache;
 
+import java.util.Set;
+
 /**
  * 接口描述:〈清除Redis缓存〉
  *
@@ -32,6 +34,15 @@ public interface RedisCacheService {
    * @return java.lang.Object
    */
   Object getCache(String key);
+
+
+  /**
+   * 方法功能描述: 获取key
+   *
+   * @param pattern key模糊匹配
+   * @return java.util.Set<java.lang.String>
+   */
+  Set<String> getKeys(String pattern);
 
 
   /**

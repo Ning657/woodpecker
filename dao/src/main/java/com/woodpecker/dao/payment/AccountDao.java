@@ -23,7 +23,9 @@ public interface AccountDao extends JpaRepository<AccountEntity, Long> {
 
   List<AccountEntity> findByAccountNo(String accountNo);
 
-  @Query(value = "select * from payment.t_tp_account where accountNo=? order by id desc limit 1;", nativeQuery = true)
-  AccountEntity findByAccountNoLast(String accountNo);
+  AccountEntity findByAccountNoAndStatus(String accountNo, byte status);
+
+  @Query(value = "select * from t_tp_account where accountNo=? and status=? order by id desc limit 1;", nativeQuery = true)
+  AccountEntity query(String accountNo, byte status);
 
 }

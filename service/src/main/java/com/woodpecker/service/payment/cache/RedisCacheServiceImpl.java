@@ -1,6 +1,7 @@
 package com.woodpecker.service.payment.cache;
 
 import com.woodpecker.commons.util.RedisUtil;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,18 @@ public class RedisCacheServiceImpl implements RedisCacheService {
 
 
   /**
+   * 方法功能描述: 获取key
+   *
+   * @param pattern key模糊匹配
+   * @return java.util.Set<java.lang.String>
+   */
+  @Override
+  public Set<String> getKeys(String pattern) {
+    return redisUtil.keys(pattern);
+  }
+
+
+  /**
    * 方法功能描述: 判断缓存是否存在
    *
    * @param key key
@@ -71,9 +84,7 @@ public class RedisCacheServiceImpl implements RedisCacheService {
    */
   @Override
   public boolean hasCache(String key) {
-    boolean exist = redisUtil.hasKey(key);
-    logger.debug("缓存key=[{}]是否存在[{}]", key, exist);
-    return exist;
+    return redisUtil.hasKey(key);
   }
 
 

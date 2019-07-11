@@ -1,13 +1,13 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.capital.wangxin;
 
-import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
+import com.woodpecker.entity.payment.PayPlatformEntity;
+import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
 import com.woodpecker.service.databuild.PlatformIdEnum;
-import com.woodpecker.testcase.payment.repayment.RepaymentTestCase;
+import com.woodpecker.testcase.payment.repayment.treefinance.capital.CapitalRepaymentTestCase;
+import com.xujinjian.Commons.Lang.StringUtil;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import com.xujinjian.HttpClient.HttpResponse;
-import com.xujinjian.Json.JsonUtil;
-import java.math.BigDecimal;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -22,127 +22,79 @@ import org.testng.annotations.Test;
  * @author: jinjianxu
  * @since: 1.0
  */
-public class WangXinCapitalTC extends RepaymentTestCase {
+public class WangXinCapitalTC extends CapitalRepaymentTestCase {
 
-  protected String payChannel = "WANGXIN";
+  String payGroupCode = "17";//支付组code
 
-  /**
-   * 资金渠道，指定为网信渠道，不可改
-   */
-  private final PlatformIdEnum platformIdEnum = PlatformIdEnum.WX;
+  String payPlatformCode = "23";//支付通道code
 
-  protected String version = "2";
+  String channel = "92";//下游渠道号
 
-  private String orderId;
+  PlatformIdEnum platformIdEnum = PlatformIdEnum.WX;
 
-  private String loanOrderId;
+  String orderVersion = "2";//订单的version
 
-  String payChannelCode = "WX";
+  String orderId;
+
+  String loanOrderId;
 
 
   @BeforeClass
   public void ready() {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
-    super.deleteUserPayChannelConfig();
-    //mock网信扣款
-    super.mockChannel(payChannel);
-    //删除Redis缓存
-    super.cleanRedis();
+    super.superdiamond.deleteUserPayChannel(super.userId);
+    //获取router.env.version
+    if (StringUtil.isEmpty(super.routerEnvVersion)) {
+      super.routerEnvVersion = super.superdiamond.getRouterEnvVersion();
+    }
+    //
+    PayPlatformEntity payPlatformEntity = payPlatformService
+        .getPayPlatform(payPlatformCode, super.routerEnvVersion);
+    //mock网信
+    super.superdiamond.mockChannel(payPlatformEntity.getName());
   }
 
 
   @BeforeMethod
   public void createOrder() {
     //删除用户名下所有订单，避免对本次测试有所影响，可以不删，因为了指定还款计划去还款
-    //super.deleteUserOrders(PlatformIdEnum.ALL);
+    super.deleteUserOrders(PlatformIdEnum.ALL);
     //生成还款订单
-    Map<String, String> map = super.createOrder(platformIdEnum, version);
+    Map<String, String> map = super.createOrder(platformIdEnum, orderVersion);
     orderId = map.get("orderId");
     loanOrderId = map.get("loanorderId");
   }
 
 
-  @Test(description = "还款方式-->催收代扣")
-  public void collectionWithhold() {
+  /**
+   * 用例说明：当期还款，走体内 --> 网信
+   */
+  @Test(description = "支付通道：网信", timeOut = 180000)
+  public void wxRepayment() {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
-    Assert.assertNotNull(orderId, "校验orderId是否为null");
-    Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
-    //读取还款计划表的前面二期的还款计划
-    //因为第一期是正常还款，走的是「网信存管户」，也就是「网信还款-先锋支付 23」
-    //第一期
-    RepaymentScheduleEntity firstRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
-    //注意点：需要看下银行限额，如果超过限额，则第一期还款原本是走「网信存管户」的，会变成走「京东两方代扣（007）42」
-    //获取出bankId
-    Integer bankId = super.getBankId(Integer.parseInt(loanOrderId));
-    //获取出银行限额
-    Integer dayAmountLimit = super.getDayAmountLimit(String.valueOf(bankId), payChannelCode);
-    //获取出还款计划当期的金额
-    BigDecimal amount1 = firstRepaymentSchedule.getAmount();
-    //是否需要恢复银行原来的限额标记
-    boolean needRestore = false;
-    //判断当前还款金额是否超过限额
-    if (amount1.compareTo(new BigDecimal(dayAmountLimit)) == 1) {
-      log.debug("当前订单[{}]金额[{}]超过了银行[{}]日限额[{}],", orderId, amount1, bankId, dayAmountLimit);
-      //计算新的银行限额
-      Integer newDayAmountLimit = amount1.add(super.upAmount).intValue();
-      log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
-      //修改银行限额
-      super.setDayAmountLimit(String.valueOf(bankId), newDayAmountLimit, payChannelCode);
-      //删除Redis缓存
-      super.cleanRedis();
-      //需要恢复银行原来的限额
-      needRestore = true;
-    }
+    Assert.assertNotNull(orderId, "校验orderId");
+    Assert.assertNotNull(loanOrderId, "校验loanOrderId");
     //对第一期进行还款
-    //通过催收代扣方式还款
-    HttpResponse httpResponse1 = null;
-    try {
-      httpResponse1 = repaymentFactory
-          .collectionWithhold(Integer.valueOf(userId), (long) firstRepaymentSchedule.getId());
-    } finally {
-      //判断是否需要恢复银行原来的限额
-      if (needRestore) {
-        log.debug("恢复银行[{}]原来的日限额[{}]", bankId, dayAmountLimit);
-        //恢复日限额
-        super.setDayAmountLimit(String.valueOf(bankId), dayAmountLimit, payChannelCode);
-        //删除Redis缓存
-        super.cleanRedis();
-        //恢复了日限额后，重新置为false
-        needRestore = false;
-      }
-    }
-    String result1 = httpResponse1.getContent();
-    log.debug("催收代扣接口返回-->[{}]", result1);
-    //判断催收代扣请求是否成功
-    //将接口返回的内容转换成JSON
-    JSONObject json1 = JsonUtil.parseObject(result1);
-    String code1 = json1.getString("code");
-    String message1 = json1.getString("message");
-    JSONObject data1 = json1.getJSONObject("data");
-    String tradeNo1 = data1.getString("tradeNo");
-    String payNo1 = data1.getString("payNo");
-    Assert.assertEquals(code1, "0000", "校验发送催收代扣接口是否成功");
-    Assert.assertEquals(message1, "请求成功", "校验发送催收代扣接口是否成功");
+    //第一期
+    RepaymentScheduleEntity repaymentSchedule = super.repaymentScheduleService
+        .getRepaymentSchedule(Integer.parseInt(loanOrderId), stage);
+    int scheduleId = repaymentSchedule.getId();
+    //还款
+    HttpResponse httpResponse = super.repayment.wxRepayment(scheduleId, super.routerEnvVersion);
+    //校验是否请求成功
+    super.verifyRepaymentData.verify(httpResponse);
+    //
+    String tradeNo = super.payHttpResponseService.getTradeNo(httpResponse);
+    String payNo = super.payHttpResponseService.getPayNo(httpResponse);
     //等待X秒，给后台足够的入账时间
+    log.debug("暂停[{}]秒，给后台足够的入账时间", super.recordedTime);
     ThreadUtil.sleep(super.recordedTime);
     //还款后校验
-    //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
-    Byte payWay1 = 17;
-    Byte payPlatform1 = 23;
-    String channel1 = "92";
-    Byte isDeprecated1 = 0;
-    super.checkTradeOrder(tradeNo1, Integer.valueOf(userId), amount1, payWay1, payPlatform1,
-        channel1, isDeprecated1);
-    //校验点2：是否发送topic:recharge的MQ，通知账务入账
-    int repaymentScheduleId1 = firstRepaymentSchedule.getId();
-    super.checkMQ(topic, payNo1, userId, repaymentScheduleId1);
-    //校验点3：t_repayment_schedule表是否 已还
-    firstRepaymentSchedule = repaymentScheduleDao
-        .findByLoanOrderIdAndStage(Integer.parseInt(loanOrderId), Byte.parseByte("1"));
-    super.checkRepaymentSchedule(firstRepaymentSchedule);
-    //校验点4：t_tp_transaction表的platId、tranStatus
-    super.checkTransaction(tradeNo1, userId, payPlatform1);
+    super.repaymentCheckPointService
+        .checkMqSendSuccess(payNo, String.valueOf(scheduleId), ScheduleTypeEnum.REPAYMENT);
+    super.verifyRepaymentData
+        .verify(tradeNo, payNo, Byte.parseByte(payGroupCode), Byte.parseByte(payPlatformCode),
+            channel, ScheduleTypeEnum.REPAYMENT, scheduleId);
   }
 
 
@@ -155,11 +107,7 @@ public class WangXinCapitalTC extends RepaymentTestCase {
 
   @AfterClass
   public void restoreUserPayChannelAndDelCache() {
-    //删除Redis缓存
-    super.cleanRedis();
-    //还原用户的支付渠道
-    //super.deleteUserPayChannelConfig();//测试开始前已经删除过了，且测试中未设置用户支付渠道，所以测试结束后不用再删
-  }
 
+  }
 
 }

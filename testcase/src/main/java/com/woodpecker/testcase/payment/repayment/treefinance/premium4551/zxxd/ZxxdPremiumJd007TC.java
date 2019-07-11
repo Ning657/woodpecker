@@ -1,15 +1,13 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.premium4551.zxxd;
 
-import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.entity.loandb.SinglePremiumScheduleEntity;
 import com.woodpecker.entity.payment.PayPlatformEntity;
+import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
 import com.woodpecker.service.databuild.PlatformIdEnum;
-import com.woodpecker.testcase.payment.repayment.treefinance.premium4551.PremiumRepaymentTestCase;
+import com.woodpecker.testcase.payment.repayment.treefinance.premium4551.Premium4551TestCase;
+import com.xujinjian.Commons.Lang.StringUtil;
 import com.xujinjian.Commons.Lang.ThreadUtil;
 import com.xujinjian.HttpClient.HttpResponse;
-import com.xujinjian.Json.JsonUtil;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -24,142 +22,76 @@ import org.testng.annotations.Test;
  * @author: jinjianxu
  * @since: 1.0
  */
-public class ZxxdPremiumJd007TC extends PremiumRepaymentTestCase {
+public class ZxxdPremiumJd007TC extends Premium4551TestCase {
 
-  String payChannel = "JDAGREEMENTPAY_4551";
+  String payPlatformCode = "42";//支付通道code
 
-  /**
-   * 资金渠道
-   */
-  final PlatformIdEnum platformIdEnum = PlatformIdEnum.ZXXD;
+  String channel = "102";//下游渠道号
 
-  String version = "1";
+  PlatformIdEnum platformIdEnum = PlatformIdEnum.ZXXD;
+
+  String orderVersion = "1";//订单的version
 
   String orderId;
 
   String loanOrderId;
 
-  String payChannelCode = "JD";
-
-  /**
-   * 需要禁用的支付通道code
-   */
-  String[] codes = {"60"};
-
-  /**
-   * 被修改过的支付通道
-   */
-  List<PayPlatformEntity> payPlatformList = null;
-
 
   @BeforeClass
   public void ready() {
     //删除用户的支付渠道，防止别人新增过别的支付渠道，导致再新增一个另外的支付渠道，就一个userid同时配置了2个支付渠道了
-    super.deleteUserPayChannelConfig();
+    super.superdiamond.deleteUserPayChannel(super.userId);
+    //获取router.env.version
+    if (StringUtil.isEmpty(super.routerEnvVersion)) {
+      super.routerEnvVersion = super.superdiamond.getRouterEnvVersion();
+    }
+    //
+    PayPlatformEntity payPlatformEntity = payPlatformService
+        .getPayPlatform(payPlatformCode, super.routerEnvVersion);
     //mock京东(007-4551)
-    super.mockChannel(payChannel);
-    //删除Redis缓存
-    super.cleanRedis();
+    super.superdiamond.mockChannel(payPlatformEntity.getName());
   }
 
 
   @BeforeMethod
   public void createOrder() {
+    //删除用户名下所有订单，避免对本次测试有所影响，可以不删，因为了指定还款计划去还款
+    super.deleteUserOrders(PlatformIdEnum.ALL);
     //生成还款订单
-    Map<String, String> map = super.createOrder(platformIdEnum, version);
+    Map<String, String> map = super.createOrder(platformIdEnum, orderVersion);
     orderId = map.get("orderId");
     loanOrderId = map.get("loanorderId");
   }
 
 
-  @Test(description = "趸交")
+  /**
+   * 用例说明：趸交还款，走大树 --> 京东 ;注意点：之所以走京东，是因为用例步骤中禁用了通联；如果不禁用通联，则京东和通联都有可能走
+   */
+  @Test(description = "趸交", timeOut = 180000)
   public void premium() {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
-    Assert.assertNotNull(orderId, "校验orderId是否为null");
-    Assert.assertNotNull(loanOrderId, "校验loanOrderId是否为null");
-    //判断银行卡是否已鉴权，如果没有鉴权，则先执行鉴权操作
-    super.bindCard(loanOrderId, null, null);
+    Assert.assertNotNull(orderId, "校验orderId");
+    Assert.assertNotNull(loanOrderId, "校验loanOrderId");
     //读取趸交计划
-    SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-        .findByLoanOrderId(Integer.parseInt(loanOrderId));
-    //注意点：需要看下银行限额，如果超过限额，则需要调大限额金额
-    //获取出bankId
-    Integer bankId = super.getBankId(Integer.parseInt(loanOrderId));
-    //获取出银行限额
-    Integer dayAmountLimit = super.getDayAmountLimit(String.valueOf(bankId), payChannelCode);
-    //获取出趸交计划的金额
-    BigDecimal amount = singlePremiumScheduleEntity.getAmount();
-    //是否需要恢复银行原来的限额标记
-    boolean needRestore = false;
-    //判断当前还款金额是否超过限额
-    if (amount.compareTo(new BigDecimal(dayAmountLimit)) == 1) {
-      log.debug("当前订单[{}]金额[{}]超过了银行[{}]日限额[{}],", orderId, amount, bankId, dayAmountLimit);
-      //计算新的银行限额
-      Integer newDayAmountLimit = amount.add(super.upAmount).intValue();
-      log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
-      //修改银行限额
-      super.setDayAmountLimit(String.valueOf(bankId), newDayAmountLimit, payChannelCode);
-      //删除Redis缓存
-      super.cleanRedis();
-      //需要恢复银行原来的限额
-      needRestore = true;
-    }
-    //禁用通联，如果不禁用通联，则会有一定的概率会去走通联
-    payPlatformList = super.banPayPlatformByCode(codes);
-    //还趸交
-    HttpResponse httpResponse = null;
-    try {
-      httpResponse = repaymentFactory
-          .premium(Integer.valueOf(userId), Long.valueOf(singlePremiumScheduleEntity.getId()));
-    } finally {
-      try {
-        //判断是否需要恢复银行原来的限额
-        if (needRestore) {
-          log.debug("恢复银行[{}]原来的日限额[{}]", bankId, dayAmountLimit);
-          //恢复日限额
-          super.setDayAmountLimit(String.valueOf(bankId), dayAmountLimit, payChannelCode);
-          //删除Redis缓存
-          super.cleanRedis();
-          //恢复了日限额后，重新置为false
-          needRestore = false;
-        }
-      } finally {
-        //恢复被修改过的支付通道
-        super.recoverPayPlatform(payPlatformList);
-      }
-    }
-    String result = httpResponse.getContent();
-    log.debug("还趸交接口返回-->[{}]", result);
-    //判断还趸交请求是否成功
-    //将接口返回的内容转换成JSON
-    JSONObject json = JsonUtil.parseObject(result);
-    String code = json.getString("code");
-    String message = json.getString("message");
-    JSONObject data = json.getJSONObject("data");
-    String tradeNo = data.getString("tradeNo");
-    String payNo = data.getString("payNo");
-    Assert.assertEquals(code, "0000", "校验发送还趸交接口是否成功");
-    Assert.assertEquals(message, "请求成功", "校验发送还趸交接口是否成功");
+    SinglePremiumScheduleEntity singlePremiumSchedule = super.singlePremiumScheduleService
+        .getSinglePremiumSchedule(Integer.parseInt(loanOrderId));
+    int scheduleId = singlePremiumSchedule.getId();
+    //还款
+    HttpResponse httpResponse = super.repayment.jdPremium(scheduleId, super.routerEnvVersion);
+    //校验是否请求成功
+    super.verifyRepaymentData.verify(httpResponse);
+    //
+    String tradeNo = super.payHttpResponseService.getTradeNo(httpResponse);
+    String payNo = super.payHttpResponseService.getPayNo(httpResponse);
     //等待X秒，给后台足够的入账时间
+    log.debug("暂停[{}]秒，给后台足够的入账时间", super.recordedTime);
     ThreadUtil.sleep(super.recordedTime);
     //还款后校验
-    //校验点1：t_tp_trade_order表的UserId、Amount、PayWay、PayPlatform、Channel、IsDeprecated
-    //PayWay原本应该是6，但因为我是直接指定了用户的支付通道，把长剑生成的PayWay=6覆盖掉了。所以暂时要么不校验这个PayWay，或者PayWay=99
-    Byte payWay = 6;
-    Byte payPlatform = 42;
-    String channel = "102";
-    Byte isDeprecated = 0;
-    super.checkTradeOrder(tradeNo, Integer.valueOf(userId), amount, payWay, payPlatform,
-        channel, isDeprecated);
-    //校验点2：是否发送topic:recharge的MQ，通知账务入账
-    int singlePremiumScheduleId = singlePremiumScheduleEntity.getId();
-    super.checkMQ(topic, payNo, userId, singlePremiumScheduleId);
-    //校验点3：qs_single_premium_schedule表是否 已还
-    singlePremiumScheduleEntity = singlePremiumScheduleDao
-        .findByLoanOrderId(Integer.parseInt(loanOrderId));
-    super.checkSinglePremiumSchedule(singlePremiumScheduleEntity);
-    //校验点4：t_tp_transaction表的platId、tranStatus
-    super.checkTransaction(tradeNo, userId, payPlatform);
+    super.repaymentCheckPointService
+        .checkMqSendSuccess(payNo, String.valueOf(scheduleId), ScheduleTypeEnum.PREMIUM);
+    super.verifyRepaymentData
+        .verify(tradeNo, payNo, Byte.parseByte(payGroupCode), Byte.parseByte(payPlatformCode),
+            channel, ScheduleTypeEnum.PREMIUM, scheduleId);
   }
 
 
@@ -172,9 +104,7 @@ public class ZxxdPremiumJd007TC extends PremiumRepaymentTestCase {
 
   @AfterClass
   public void restoreUserPayChannelAndDelCache() {
-    //删除Redis缓存
-    super.cleanRedis();
-  }
 
+  }
 
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="资金方鉴权" verbose="1">
+  <listeners>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+  </listeners>
+  <test name="资金方鉴权">
+    <classes>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.capital.bohai.BoHaiBindTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.capital.mnw.MnwBindTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.capital.ssj.SsjBindTC"/>
+      <class
+        name="com.woodpecker.testcase.payment.bindcard.treefinance.capital.youli.YouLiBindTC"/>
+    </classes>
+  </test>
+</suite>
