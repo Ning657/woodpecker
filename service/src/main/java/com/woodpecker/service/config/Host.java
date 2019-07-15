@@ -30,6 +30,9 @@ public class Host {
   @Value("${mq.host:}")
   public String mqHost;
 
+  @Value("${accounting.host:}")
+  public String accountingHost;
+
 
   public String getDatabuildHost() {
     return databuildHost;
@@ -79,5 +82,13 @@ public class Host {
   public void setMqHost(String mqHost) {
     this.mqHost = mqHost;
   }
-  
+
+  public String getAccountingHost() {
+    return accountingHost;
+  }
+
+  public void setAccountingHost(String accountingHost) {
+    this.accountingHost = accountingHost;
+  }
+
 }

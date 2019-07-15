@@ -4,10 +4,8 @@ import com.woodpecker.framework.aop.annotation.PayHandle;
 import com.woodpecker.framework.aop.annotation.RepaymentAmount;
 import com.woodpecker.framework.aop.annotation.RouterVersion;
 import com.woodpecker.framework.aop.annotation.ScheduleId;
-import com.woodpecker.framework.bind.BindChannelEnum;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
-import com.woodpecker.framework.pay.PayChannelCodeEnum;
-import com.woodpecker.framework.pay.PayPlatformNameEnum;
+import com.woodpecker.framework.pay.PayPlatformEnum;
 import com.woodpecker.framework.pay.RepayTypeEnum;
 import com.woodpecker.framework.repayment.RepaymentService;
 import com.xujinjian.HttpClient.HttpResponse;
@@ -39,7 +37,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle
+  @PayHandle(payPlatform = PayPlatformEnum.JDAGREEMENTPAY_4551)
   public HttpResponse jdRepaymentByCollectionProxy(@ScheduleId long id,
       @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -57,7 +55,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(banCodes = {PayPlatformNameEnum.ALL_IN_JN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.JD_XY_PAY, banCodes = {PayPlatformEnum.ALL_IN_JN_PAY})
   public HttpResponse jdRepaymentByCollectionProxyJN(@ScheduleId long id,
       @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -75,8 +73,8 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.ALL_IN, banCodes = {
-      PayPlatformNameEnum.JDAGREEMENTPAY_4551}, bindChannels = {BindChannelEnum.ALL_IN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.ALL_IN_PAY, banCodes = {
+      PayPlatformEnum.JDAGREEMENTPAY_4551})
   public HttpResponse allInRepaymentByCollectionProxy(@ScheduleId long id,
       @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -94,8 +92,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.ALL_IN, banCodes = {
-      PayPlatformNameEnum.JD_XY_PAY}, bindChannels = {BindChannelEnum.ALL_IN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.ALL_IN_JN_PAY, banCodes = {PayPlatformEnum.JD_XY_PAY})
   public HttpResponse allInRepaymentByCollectionProxyJN(@ScheduleId long id,
       @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -114,7 +111,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(scheduleType = ScheduleTypeEnum.LOAN_ORDER)
+  @PayHandle(payPlatform = PayPlatformEnum.JDAGREEMENTPAY_4551, scheduleType = ScheduleTypeEnum.LOAN_ORDER)
   public HttpResponse jdRepaymentByCollectionDeposit(@ScheduleId long id,
       @RepaymentAmount BigDecimal amount, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -133,8 +130,8 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.ALL_IN, scheduleType = ScheduleTypeEnum.LOAN_ORDER, banCodes = {
-      PayPlatformNameEnum.JDAGREEMENTPAY_4551}, bindChannels = {BindChannelEnum.ALL_IN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.ALL_IN_PAY, scheduleType = ScheduleTypeEnum.LOAN_ORDER, banCodes = {
+      PayPlatformEnum.JDAGREEMENTPAY_4551})
   public HttpResponse allInRepaymentByCollectionDeposit(@ScheduleId long id,
       @RepaymentAmount BigDecimal amount, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
@@ -152,7 +149,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(scheduleType = ScheduleTypeEnum.PREMIUM)
+  @PayHandle(payPlatform = PayPlatformEnum.JDAGREEMENTPAY_4551, scheduleType = ScheduleTypeEnum.PREMIUM)
   public HttpResponse jdPremium(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService.repayment(id, null, RepayTypeEnum.PREMIUM);
     logger.debug("[{}]接口返回的内容为[{}]", RepayTypeEnum.PREMIUM.getDesc(), httpResponse.getContent());
@@ -167,8 +164,8 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
-      PayPlatformNameEnum.ALL_IN_JN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.JD_XY_PAY, scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
+      PayPlatformEnum.ALL_IN_JN_PAY})
   public HttpResponse jdPremiumJN(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService.repayment(id, null, RepayTypeEnum.PREMIUM);
     logger.debug("[{}]接口返回的内容为[{}]", RepayTypeEnum.PREMIUM.getDesc(), httpResponse.getContent());
@@ -183,8 +180,8 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.ALL_IN, scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
-      PayPlatformNameEnum.JDAGREEMENTPAY_4551}, bindChannels = {BindChannelEnum.ALL_IN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.ALL_IN_PAY, scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
+      PayPlatformEnum.JDAGREEMENTPAY_4551})
   public HttpResponse allInPremium(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService.repayment(id, null, RepayTypeEnum.PREMIUM);
     logger.debug("[{}]接口返回的内容为[{}]", RepayTypeEnum.PREMIUM.getDesc(), httpResponse.getContent());
@@ -199,8 +196,8 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.ALL_IN, scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
-      PayPlatformNameEnum.JD_XY_PAY}, bindChannels = {BindChannelEnum.ALL_IN_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.ALL_IN_JN_PAY, scheduleType = ScheduleTypeEnum.PREMIUM, banCodes = {
+      PayPlatformEnum.JD_XY_PAY})
   public HttpResponse allInPremiumJN(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService.repayment(id, null, RepayTypeEnum.PREMIUM);
     logger.debug("[{}]接口返回的内容为[{}]", RepayTypeEnum.PREMIUM.getDesc(), httpResponse.getContent());
@@ -215,8 +212,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.BOHAI_TRUST, banCodes = {}, bindChannels = {
-      BindChannelEnum.BOHAITRUST})
+  @PayHandle(payPlatform = PayPlatformEnum.BOHAITRUST, banCodes = {})
   public HttpResponse boHaiRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);
@@ -233,8 +229,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.MNW, banCodes = {}, bindChannels = {
-      BindChannelEnum.MNWPAY})
+  @PayHandle(payPlatform = PayPlatformEnum.MNWPAY, banCodes = {})
   public HttpResponse mnwRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);
@@ -251,8 +246,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.SSJ, banCodes = {}, bindChannels = {
-      BindChannelEnum.SSJPAY})
+  @PayHandle(payPlatform = PayPlatformEnum.SSJPAY, banCodes = {})
   public HttpResponse ssjRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);
@@ -269,8 +263,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.WX, banCodes = {}, bindChannels = {
-      BindChannelEnum.JDAGREEMENTPAY})
+  @PayHandle(payPlatform = PayPlatformEnum.WANGXIN, banCodes = {})
   public HttpResponse wxRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);
@@ -287,8 +280,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.XZ_TRUST, banCodes = {}, bindChannels = {
-      BindChannelEnum.JDAGREEMENTPAY})
+  @PayHandle(payPlatform = PayPlatformEnum.XZ_TRUST_PAY, banCodes = {})
   public HttpResponse zxRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);
@@ -305,8 +297,7 @@ public class Repayment {
    * @param version RepayTypeEnum
    * @return com.xujinjian.HttpClient.HttpResponse
    */
-  @PayHandle(payChannelCode = PayChannelCodeEnum.YOOLI, banCodes = {}, bindChannels = {
-      BindChannelEnum.YOOLI_PAY})
+  @PayHandle(payPlatform = PayPlatformEnum.YOOLI_PAY, banCodes = {})
   public HttpResponse youLiRepayment(@ScheduleId long id, @RouterVersion String version) {
     HttpResponse httpResponse = repaymentService
         .repayment(id, null, RepayTypeEnum.COLLECTION_PROXY);

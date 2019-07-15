@@ -10,8 +10,9 @@ import com.woodpecker.framework.aop.annotation.RepaymentAmount;
 import com.woodpecker.framework.aop.annotation.RouterVersion;
 import com.woodpecker.framework.aop.annotation.ScheduleId;
 import com.woodpecker.framework.bind.AuthService;
+import com.woodpecker.framework.bind.BindCardEnum;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
-import com.woodpecker.framework.pay.PayPlatformNameEnum;
+import com.woodpecker.framework.pay.PayPlatformEnum;
 import com.woodpecker.service.payment.bind.check.VerifyBindData;
 import com.woodpecker.service.payment.cache.RedisCacheFactory;
 import com.xujinjian.Commons.Lang.ThreadUtil;
@@ -84,9 +85,9 @@ public class PayHandleAspect {
     String payChannelCode = null;
     String version = null;
     //禁用指定的支付通道
-    PayPlatformNameEnum[] banCodes = null;
+    PayPlatformEnum[] banCodes = null;
     //禁用除指定支付通道外的通道
-    PayPlatformNameEnum[] banOtherCodes = null;
+    PayPlatformEnum[] banOtherCodes = null;
     //被禁用的通道，后面需要恢复
     List<PayPlatformEntity> list = null;
 
@@ -94,14 +95,14 @@ public class PayHandleAspect {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     Method method = signature.getMethod();
     PayHandle payHandle = method.getAnnotation(PayHandle.class);
-    log.debug("拦截到方法[{}],[{}]", joinPoint.getSignature().getName(),
+    log.debug("拦截到方法[{}],PayHandle == null ? [{}]", joinPoint.getSignature().getName(),
         payHandle == null);
     //
     if (null != payHandle) {
       //获取出ScheduleTypeEnum
       ScheduleTypeEnum scheduleType = payHandle.scheduleType();
       //获取出payChannelCode
-      payChannelCode = payHandle.payChannelCode().getCode();
+      payChannelCode = payHandle.payPlatform().getPayChannelCode();
       //获取出id
       int id = getId(joinPoint);
       //获取出amount
@@ -116,59 +117,68 @@ public class PayHandleAspect {
       //鉴权
       bindCard(id, payHandle);
 
-      //本次的还款金额
-      BigDecimal repaymentAmount = null;
-      //判断scheduleType，如果scheduleType=REPAYMENT/PREMIUM，则取计划的金额，否则，就取调用还款接口时，传的金额
-      switch (scheduleType) {
-        case REPAYMENT:
-          //获取还款计划/趸交计划的金额
-          repaymentAmount = bankDayLimitService.getAmount(scheduleType, id);
-          break;
-        case PREMIUM:
-          //获取还款计划/趸交计划的金额
-          repaymentAmount = bankDayLimitService.getAmount(scheduleType, id);
-          break;
-        default:
-          //获取还款接口传的还款金额
-          repaymentAmount = getRepaymentAmount(joinPoint);
-          break;
-      }
-      if (null == repaymentAmount) {
-        repaymentAmount = BigDecimal.ZERO;
-        log.error("修改银行限额时，没有获取到还款金额，使用默认值:[{}]",
-            repaymentAmount.stripTrailingZeros().toPlainString());
-      }
-      //获取出bankId
-      bankId = bankDayLimitService.getBankId(scheduleType, id);
-      //获取出银行日限额
-      dayAmountLimit = bankDayLimitService
-          .getDayAmountLimit(String.valueOf(bankId), payChannelCode, version);
+      //判断是否需要修改银行限额
+      int editAmount = payHandle.amount();
+      log.debug("amount=[{}]", editAmount);
+      if (editAmount != 0) {
+        //有设置需要修改银行限额
+        log.debug("有设置需要修改银行限额，当还款金额大于银行限额时，则会在原限额基础上，增加amount=[{}]", editAmount);
+        //本次的还款金额
+        BigDecimal repaymentAmount = null;
+        //判断scheduleType，如果scheduleType=REPAYMENT/PREMIUM，则取计划的金额，否则，就取调用还款接口时，传的金额
+        switch (scheduleType) {
+          case REPAYMENT:
+            //获取还款计划/趸交计划的金额
+            repaymentAmount = bankDayLimitService.getAmount(scheduleType, id);
+            break;
+          case PREMIUM:
+            //获取还款计划/趸交计划的金额
+            repaymentAmount = bankDayLimitService.getAmount(scheduleType, id);
+            break;
+          default:
+            //获取还款接口传的还款金额
+            repaymentAmount = getRepaymentAmount(joinPoint);
+            break;
+        }
+        if (null == repaymentAmount) {
+          repaymentAmount = BigDecimal.ZERO;
+          log.error("修改银行限额时，没有获取到还款金额，使用默认值:[{}]",
+              repaymentAmount.stripTrailingZeros().toPlainString());
+        }
+        //获取出bankId
+        bankId = bankDayLimitService.getBankId(scheduleType, id);
+        //获取出银行日限额
+        dayAmountLimit = bankDayLimitService
+            .getDayAmountLimit(String.valueOf(bankId), payChannelCode, version);
 
-      //判断当前还款金额是否超过限额
-      if (repaymentAmount.compareTo(new BigDecimal(dayAmountLimit)) > 0) {
-        log.debug("计划类型=[{}]的还款金额[{}]超过了银行[{}]的日限额[{}]", scheduleType.name(),
-            repaymentAmount.stripTrailingZeros().toPlainString(), bankId, dayAmountLimit);
-        //要修改银行日限额
-        //计算新的银行限额
-        int newDayAmountLimit = repaymentAmount.add(new BigDecimal(amount)).intValue();
-        log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
+        //判断当前还款金额是否超过限额
+        if (repaymentAmount.compareTo(new BigDecimal(dayAmountLimit)) > 0) {
+          log.debug("计划类型=[{}]的还款金额[{}]超过了银行[{}]的日限额[{}]", scheduleType.name(),
+              repaymentAmount.stripTrailingZeros().toPlainString(), bankId, dayAmountLimit);
+          //要修改银行日限额
+          //计算新的银行限额
+          int newDayAmountLimit = repaymentAmount.add(new BigDecimal(amount)).intValue();
+          log.debug("将银行[{}]原来的日限额[{}]修改为[{}]", bankId, dayAmountLimit, newDayAmountLimit);
 
-        //修改银行限额
-        bankDayLimitService
-            .setDayAmountLimit(String.valueOf(bankId), payChannelCode, newDayAmountLimit, version);
+          //修改银行限额
+          bankDayLimitService
+              .setDayAmountLimit(String.valueOf(bankId), payChannelCode, newDayAmountLimit,
+                  version);
 
-        //需要恢复银行原来的限额
-        needRestore = true;
+          //需要恢复银行原来的限额
+          needRestore = true;
 
-      } else {
-        log.debug("未超过银行限额");
+        } else {
+          log.debug("未超过银行限额");
+        }
       }
 
       //判断是否需要禁用指定的支付通道
       if (banCodes.length >= 1) {
+        log.debug("有设置需要禁用的通道");
         //有设置需要禁用的通道
         List<String> codes = new ArrayList<>(banCodes.length);
-        for (PayPlatformNameEnum banCode : banCodes) {
+        for (PayPlatformEnum banCode : banCodes) {
           codes.add(banCode.getCode());
         }
         log.debug("需要禁用支付通道[{}]", codes);
@@ -191,9 +201,10 @@ public class PayHandleAspect {
         //如果同时设置了banCodes和banOtherCodes，只有banCodes生效
         //判断是否需要禁用除指定的支付通道外的通道
         if (banOtherCodes.length >= 1) {
+          log.debug("有设置需要禁用的通道");
           //有设置需要禁用的通道
           List<String> codes = new ArrayList<>(banOtherCodes.length);
-          for (PayPlatformNameEnum banOtherCode : banOtherCodes) {
+          for (PayPlatformEnum banOtherCode : banOtherCodes) {
             codes.add(banOtherCode.getCode());
           }
           log.debug("需要禁用除[{}]外的支付通道", codes);
@@ -217,9 +228,13 @@ public class PayHandleAspect {
 
       //判断是否需要删除Redis缓存
       boolean delRedisCacheBeforePay = payHandle.delRedisCacheBeforePay();
+      log.debug("delRedisCacheBeforePay=[{}]", delRedisCacheBeforePay);
       if (delRedisCacheBeforePay) {
+        log.debug("在支付前，先删除Redis缓存");
         //删除Redis缓存
         delRedisCache();
+      } else {
+        log.debug("在支付前，不需要删除Redis缓存");
       }
     }
 
@@ -255,9 +270,13 @@ public class PayHandleAspect {
       if (null != payHandle) {
         //判断是否需要删除Redis缓存
         boolean delRedisCacheAfterPay = payHandle.delRedisCacheAfterPay();
+        log.debug("delRedisCacheAfterPay=[{}]", delRedisCacheAfterPay);
         if (delRedisCacheAfterPay) {
+          log.debug("在支付后，删除Redis缓存");
           //删除Redis缓存
           delRedisCache();
+        } else {
+          log.debug("在支付后，不需要删除Redis缓存");
         }
       }
     }
@@ -423,6 +442,21 @@ public class PayHandleAspect {
    * @return void
    */
   private void bindCard(int id, PayHandle payHandle) {
+    //是否需要绑卡
+    PayPlatformEnum payPlatformEnum = payHandle.payPlatform();
+    byte bindCard = payPlatformEnum.getBindCard();
+    log.debug("支付通道[{} ({})]，是否需要绑卡[{}]", payPlatformEnum.getName(), payPlatformEnum.getCode(),
+        bindCard);
+    if (bindCard == 0) {
+      log.debug("不需要绑卡");
+      return;
+    } else if (bindCard == 1) {
+      log.debug("需要绑卡");
+    } else {
+      log.error("支付通道[{} ({})]，是否需要绑卡bindCard=[{}]值错误，只能是0或1", payPlatformEnum.getName(),
+          payPlatformEnum.getCode(), bindCard);
+      throw new TestCaseException("bindCard=" + bindCard + "值错误");
+    }
     int loanOrderId;
     ScheduleTypeEnum scheduleType = payHandle.scheduleType();
     switch (scheduleType) {
@@ -443,16 +477,13 @@ public class PayHandleAspect {
       log.error("没有loanOrderId，无法鉴权，请检查！");
       return;
     }
-    if (payHandle.bindChannels().length < 1) {
-      log.debug("没有设置需要绑卡/鉴权的通道，跳过绑卡/鉴权");
-      return;
-    }
+    //
+    BindCardEnum[] bindCardEnums = {payHandle.payPlatform().getBindCardEnum()};
+    String authCode = payHandle.authCode();
     //鉴权
-    int bankAccountId = authService
-        .auth(loanOrderId, payHandle.bindChannels(),
-            payHandle.verificationCode());
+    int bankAccountId = authService.auth(loanOrderId, bindCardEnums, authCode);
     //绑卡后校验数据库数据
-    verifyBindData.verify(bankAccountId, payHandle.bindChannels());
+    verifyBindData.verify(bankAccountId, bindCardEnums);
   }
 
 

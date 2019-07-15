@@ -34,12 +34,12 @@ public class BindCardServiceImpl implements BindCardService {
   /**
    * 请求绑卡接口
    */
-  private final String requestBindCardUrl = "/bindCard/requestBindCardWithPlatfrom";
+  final String requestBindCardUrl = "/bindCard/requestBindCardWithPlatfrom";
 
   /**
    * 确认绑卡接口
    */
-  private final String sureBindCardUrl = "/bindCard/newBindCard";
+  final String sureBindCardUrl = "/bindCard/newBindCard";
 
 
   /**
@@ -69,36 +69,6 @@ public class BindCardServiceImpl implements BindCardService {
     Map<String, String> param = bindCardDto.toSureBindCardMap();
     logger.debug("确认绑卡url=[{}],param=[{}]", url, param);
     return httpApi.get(url, param);
-  }
-
-
-  public HttpApi getHttpApi() {
-    return httpApi;
-  }
-
-
-  public void setHttpApi(HttpApi httpApi) {
-    this.httpApi = httpApi;
-  }
-
-
-  public Host getHost() {
-    return host;
-  }
-
-
-  public void setHost(Host host) {
-    this.host = host;
-  }
-
-
-  public String getRequestBindCardUrl() {
-    return requestBindCardUrl;
-  }
-
-
-  public String getSureBindCardUrl() {
-    return sureBindCardUrl;
   }
 
 

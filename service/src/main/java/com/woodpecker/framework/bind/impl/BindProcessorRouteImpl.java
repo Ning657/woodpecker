@@ -1,6 +1,6 @@
 package com.woodpecker.framework.bind.impl;
 
-import com.woodpecker.framework.bind.BindChannelEnum;
+import com.woodpecker.framework.bind.BindCardEnum;
 import com.woodpecker.framework.bind.BindProcessor;
 import com.woodpecker.framework.bind.BindProcessorRoute;
 import com.woodpecker.framework.bind.BindService;
@@ -31,13 +31,14 @@ public class BindProcessorRouteImpl implements BindProcessorRoute {
   /**
    * 方法功能描述: 路由相应的BindProcessor绑卡实现类
    *
-   * @param bindChannel BindChannelEnum
+   * @param bindCardEnum BindCardEnum
    * @return com.woodpecker.framework.bind.BindProcessor
    */
   @Override
-  public BindProcessor route(BindChannelEnum bindChannel) {
+  public BindProcessor route(BindCardEnum bindCardEnum) {
     logger
-        .debug("开始路由BindChannelEnum=[{}({})]的绑卡服务", bindChannel.getValue(), bindChannel.getCode());
+        .debug("开始路由BindCardEnum=[{}({})]的绑卡服务", bindCardEnum.getPayPlatformName(),
+            bindCardEnum.getChannel());
     BindProcessor bindProcessorImpl = null;
     if (null != bindProcessors) {
       logger.debug("共注册了[{}]个BindProcessor服务", bindProcessors.size());
@@ -47,9 +48,9 @@ public class BindProcessorRouteImpl implements BindProcessorRoute {
         if (null != bindService) {
           //当前类有BindService注解
           //获取出绑卡渠道枚举
-          BindChannelEnum type = bindService.bindChannel();
+          BindCardEnum type = bindService.bindCardEnum();
           //判断绑卡渠道枚举是否相同
-          if (bindChannel.equals(type)) {
+          if (bindCardEnum.equals(type)) {
             //此BindProcessor实现类，是相应的绑卡实现类
             //路由到相应的绑卡实现类
             bindProcessorImpl = bindProcessor;

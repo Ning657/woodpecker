@@ -53,12 +53,20 @@ public class RedisCacheFactory {
    */
   public void delete() {
     for (String pattern : patterns) {
-      //模糊获取出key
-      Set<String> keys = redisCacheService.getKeys(pattern);
-      //遍历模糊匹配到的所有key
-      for (String key : keys) {
-        //删除key
-        redisCacheService.delete(key);
+      try {
+        //模糊获取出key
+        Set<String> keys = redisCacheService.getKeys(pattern);
+        //遍历模糊匹配到的所有key
+        for (String key : keys) {
+          try {
+            //删除key
+            redisCacheService.delete(key);
+          } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+          }
+        }
+      } catch (Throwable e) {
+        logger.error(e.getMessage(), e);
       }
     }
   }

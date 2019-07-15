@@ -1,7 +1,7 @@
 package com.woodpecker.testcase.payment.bindcard.treefinance.capital.bohai;
 
 import com.woodpecker.entity.loandb.CustInfoEntity;
-import com.woodpecker.framework.bind.BindChannelEnum;
+import com.woodpecker.framework.bind.BindCardEnum;
 import com.woodpecker.framework.bind.dto.BindCardDto;
 import com.woodpecker.testcase.payment.bindcard.BindTestCase;
 import com.xujinjian.Commons.Math.MathUtil;
@@ -17,13 +17,13 @@ import org.testng.annotations.Test;
  */
 public class BoHaiBindTC extends BindTestCase {
 
-  BindChannelEnum bindChannel = BindChannelEnum.BOHAITRUST;
+  BindCardEnum bindChannel = BindCardEnum.BOHAITRUST;
 
 
   @BeforeClass
   public void ready() {
     //mock
-    superdiamond.mockChannel(bindChannel.getValue());
+    superdiamond.mockChannel(bindChannel.getPayPlatformName());
   }
 
 
@@ -41,7 +41,7 @@ public class BoHaiBindTC extends BindTestCase {
     idCardNo = dataAnalysisService.aesDecrypt(idCardNo);
     //BindCardDto
     BindCardDto bindCardDto = new BindCardDto();
-    bindCardDto.setDeductPlatform(bindChannel.getValue());
+    bindCardDto.setDeductPlatform(bindChannel.getPayPlatformName());
     bindCardDto.setBankId("10");
     bindCardDto.setIdCardNo(idCardNo);
     bindCardDto.setUserName(custInfoEntity.getUserName());
@@ -50,9 +50,9 @@ public class BoHaiBindTC extends BindTestCase {
     bindCardDto.setUserId(userId);
     bindCardDto.setCode("123456");
     //绑卡
-    int bankAccountId = authService.bindCard(bindCardDto, new BindChannelEnum[]{bindChannel});
+    int bankAccountId = authService.bindCard(bindCardDto, new BindCardEnum[]{bindChannel});
     //校验
-    verifyBindData.verify(bankAccountId, new BindChannelEnum[]{bindChannel});
+    verifyBindData.verify(bankAccountId, new BindCardEnum[]{bindChannel});
   }
 
 

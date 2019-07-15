@@ -18,7 +18,7 @@ import org.testng.Assert;
  * @since: 1.0
  */
 public class RepaymentTestCase extends PaymentTestCase {
-
+  
   @Autowired
   protected PayPlatformService payPlatformService;
 

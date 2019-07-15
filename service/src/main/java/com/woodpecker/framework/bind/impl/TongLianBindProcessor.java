@@ -2,8 +2,8 @@ package com.woodpecker.framework.bind.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.woodpecker.framework.bind.AbstractBindProcessor;
+import com.woodpecker.framework.bind.BindCardEnum;
 import com.woodpecker.framework.bind.BindCardService;
-import com.woodpecker.framework.bind.BindChannelEnum;
 import com.woodpecker.framework.bind.BindRequestVerifyService;
 import com.woodpecker.framework.bind.BindService;
 import com.woodpecker.framework.bind.dto.BindCardDto;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author: jinjianxu
  * @since: 1.0
  */
-@BindService(bindChannel = BindChannelEnum.ALL_IN_PAY)
+@BindService(bindCardEnum = BindCardEnum.ALL_IN_PAY)
 public class TongLianBindProcessor extends AbstractBindProcessor {
 
   @Autowired
@@ -26,7 +26,7 @@ public class TongLianBindProcessor extends AbstractBindProcessor {
   @Autowired
   private BindRequestVerifyService bindRequestVerifyService;
 
-  private String deductPlatform = BindChannelEnum.ALL_IN_PAY.getValue();
+  private String deductPlatform = BindCardEnum.ALL_IN_PAY.getPayPlatformName();
 
 
   /**

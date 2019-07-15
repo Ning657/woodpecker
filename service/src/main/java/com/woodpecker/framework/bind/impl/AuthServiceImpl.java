@@ -6,7 +6,7 @@ import com.woodpecker.dao.payment.AccountDao;
 import com.woodpecker.entity.loandb.BankAccountEntity;
 import com.woodpecker.entity.loandb.LoanOrderEntity;
 import com.woodpecker.framework.bind.AuthService;
-import com.woodpecker.framework.bind.BindChannelEnum;
+import com.woodpecker.framework.bind.BindCardEnum;
 import com.woodpecker.framework.bind.BindProcessor;
 import com.woodpecker.framework.bind.BindProcessorRoute;
 import com.woodpecker.framework.bind.dto.BindCardDto;
@@ -50,17 +50,17 @@ public class AuthServiceImpl implements AuthService {
    * 方法功能描述: 绑卡
    *
    * @param bindCardDto BindCardDto
-   * @param bindChannels BindChannelEnum数组
+   * @param bindCardEnums BindCardEnum数组
    * @return int
    */
   @Override
-  public int bindCard(BindCardDto bindCardDto, BindChannelEnum[] bindChannels) {
+  public int bindCard(BindCardDto bindCardDto, BindCardEnum[] bindCardEnums) {
     int bankAccountId = 0;
     //循环绑卡
-    for (BindChannelEnum bindChannel : bindChannels) {
-      bindCardDto.setDeductPlatform(bindChannel.getValue());
+    for (BindCardEnum bindCardEnum : bindCardEnums) {
+      bindCardDto.setDeductPlatform(bindCardEnum.getPayPlatformName());
       //路由具体的绑卡实现类
-      BindProcessor bindProcessor = bindProcessorRoute.route(bindChannel);
+      BindProcessor bindProcessor = bindProcessorRoute.route(bindCardEnum);
       if (null == bindProcessor) {
         logger.error("没有路由到相应的BindProcessor绑卡实现类");
         return bankAccountId;
@@ -76,12 +76,12 @@ public class AuthServiceImpl implements AuthService {
    * 方法功能描述: 鉴权
    *
    * @param loanOrderId loanOrderId
-   * @param bindChannels BindChannelEnum数组
+   * @param bindCardEnums BindCardEnum数组
    * @param code 短信验证码
    * @return int
    */
   @Override
-  public int auth(int loanOrderId, BindChannelEnum[] bindChannels, String code) {
+  public int auth(int loanOrderId, BindCardEnum[] bindCardEnums, String code) {
     int bankAccountId = 0;
     //获取BankAccountEntity
     BankAccountEntity bankAccountEntity = getBankAccountEntity(loanOrderId);
@@ -90,13 +90,13 @@ public class AuthServiceImpl implements AuthService {
       return bankAccountId;
     }
     //遍历需要绑卡的渠道
-    for (BindChannelEnum bindChannel : bindChannels) {
+    for (BindCardEnum bindCardEnum : bindCardEnums) {
       //判断是否已鉴权
-      boolean isAuth = isAuth(bankAccountEntity, bindChannel);
+      boolean isAuth = isAuth(bankAccountEntity, bindCardEnum);
       if (!isAuth) {
         //未鉴权
         //路由具体的绑卡实现类
-        BindProcessor bindProcessor = bindProcessorRoute.route(bindChannel);
+        BindProcessor bindProcessor = bindProcessorRoute.route(bindCardEnum);
         if (null == bindProcessor) {
           logger.error("没有路由到相应的BindProcessor绑卡实现类");
           logger.error("注意：由于没有鉴权，将会影响支付通道路由结果！");
@@ -114,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
         cardNo = dataAnalysisService.aesDecrypt(cardNo);
         //set BindCardDto
         BindCardDto bindCardDto = new BindCardDto();
-        bindCardDto.setDeductPlatform(bindChannel.getValue());
+        bindCardDto.setDeductPlatform(bindCardEnum.getPayPlatformName());
         bindCardDto.setBankId(bankId);
         bindCardDto.setIdCardNo(idCardNo);
         bindCardDto.setUserName(userName);
@@ -126,15 +126,16 @@ public class AuthServiceImpl implements AuthService {
         if (id > 0) {
           bankAccountId = bankAccountEntity.getId();
           logger.debug("鉴权成功 bankAccountId=[{}];id=[{}];Channel[{}]", bankAccountId, id,
-              bindChannel.getCode());
+              bindCardEnum.getChannel());
         } else {
-          logger.error("鉴权失败 id=[{}];Channel[{}]", id, bindChannel.getCode());
+          logger.error("鉴权失败 id=[{}];Channel[{}]", id, bindCardEnum.getChannel());
           logger.error("注意：鉴权失败，将会影响支付通道路由结果！");
         }
       } else {
         //已鉴权
         bankAccountId = bankAccountEntity.getId();
-        logger.debug("已鉴权 bankAccountId=[{}];Channel[{}]", bankAccountId, bindChannel.getCode());
+        logger
+            .debug("已鉴权 bankAccountId=[{}];Channel[{}]", bankAccountId, bindCardEnum.getChannel());
       }
     }
     //
@@ -146,11 +147,11 @@ public class AuthServiceImpl implements AuthService {
    * 方法功能描述: 判断是否已鉴权
    *
    * @param bankAccountEntity BankAccountEntity
-   * @param bindChannel BindChannelEnum
+   * @param bindCardEnum BindCardEnum
    * @return boolean
    */
   @Override
-  public boolean isAuth(BankAccountEntity bankAccountEntity, BindChannelEnum bindChannel) {
+  public boolean isAuth(BankAccountEntity bankAccountEntity, BindCardEnum bindCardEnum) {
     //是否已鉴权标记
     boolean isAuth = false;
     //获取出t_bank_account表的Channel
@@ -158,14 +159,14 @@ public class AuthServiceImpl implements AuthService {
     channel = channel.substring(1, channel.length() - 1).replaceAll("\"", "");
     List<String> channels = new ArrayList<>(Arrays.asList(channel.split(",")));
     //判断是否已鉴权，判断channel是否包含
-    if (!channels.contains(bindChannel.getCode())) {
+    if (!channels.contains(String.valueOf(bindCardEnum.getChannel()))) {
       //未鉴权，接下去要进行鉴权操作
       logger.debug("channel=[{}],deductPlatform=[{}]未鉴权,bankAccountEntity=[{}]",
-          bindChannel.getCode(), bindChannel.getValue(), bankAccountEntity);
+          bindCardEnum.getChannel(), bindCardEnum.getPayPlatformName(), bankAccountEntity);
     } else {
       //已鉴权
       logger.debug("channel=[{}],deductPlatform=[{}]已鉴权,bankAccountEntity=[{}]",
-          bindChannel.getCode(), bindChannel.getValue(), bankAccountEntity);
+          bindCardEnum.getChannel(), bindCardEnum.getPayPlatformName(), bankAccountEntity);
       isAuth = true;
     }
     return isAuth;

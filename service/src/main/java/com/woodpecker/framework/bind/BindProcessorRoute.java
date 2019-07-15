@@ -12,10 +12,10 @@ public interface BindProcessorRoute {
   /**
    * 方法功能描述: 路由相应的BindProcessor绑卡实现类
    *
-   * @param bindChannel BindChannelEnum
+   * @param bindCardEnum BindCardEnum
    * @return com.woodpecker.framework.bind.BindProcessor
    */
-  BindProcessor route(BindChannelEnum bindChannel);
+  BindProcessor route(BindCardEnum bindCardEnum);
 
 
 }

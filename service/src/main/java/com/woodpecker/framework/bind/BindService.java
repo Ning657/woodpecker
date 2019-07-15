@@ -23,7 +23,7 @@ public @interface BindService {
   /**
    * 绑卡渠道
    */
-  BindChannelEnum bindChannel();
+  BindCardEnum bindCardEnum();
 
 
 }
