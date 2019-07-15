@@ -1,7 +1,6 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.baoyin;
 
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
-import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
 import com.woodpecker.framework.pay.PayGroupPlatformEnum;
 import com.woodpecker.framework.pay.PayPlatformEnum;
@@ -26,14 +25,8 @@ import org.testng.annotations.Test;
  */
 public class BaoYinJd007TC extends Stages4551TestCase {
 
-  /**
-   * 支付组
-   */
   PayGroupPlatformEnum payGroupPlatformEnum = PayGroupPlatformEnum.JD007;
 
-  /**
-   * 支付通道
-   */
   PayPlatformEnum payPlatformEnum = payGroupPlatformEnum.getPayPlatformCode();
 
   String payGroupCode = payGroupPlatformEnum.getPayGroupCode();//支付组code
@@ -59,11 +52,8 @@ public class BaoYinJd007TC extends Stages4551TestCase {
     if (StringUtil.isEmpty(super.routerEnvVersion)) {
       super.routerEnvVersion = super.superdiamond.getRouterEnvVersion();
     }
-    //
-    PayPlatformEntity payPlatformEntity = payPlatformService
-        .getPayPlatform(payPlatformCode, super.routerEnvVersion);
     //mock京东(007-4551)
-    super.superdiamond.mockChannel(payPlatformEntity.getName());
+    super.superdiamond.mockChannel(payPlatformEnum.getName());
   }
 
 

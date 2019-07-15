@@ -10,6 +10,8 @@
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.bohai.BoHaiJd007TC"/>
       <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.jyc.JycJd007TC"/>
+      <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.mnw.MnwJd007TC"/>
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.ssj.SsjJd007TC"/>
@@ -17,6 +19,8 @@
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.wangxin.WangXinJd007TC"/>
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.xizang.XiZangJd007TC"/>
+      <class
+        name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.youli.YouLiJd007TC"/>
       <class
         name="com.woodpecker.testcase.payment.repayment.treefinance.stages4551.zxxd.ZxxdJd007TC"/>
     </classes>

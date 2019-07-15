@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Premium5213TestCase extends RepaymentTestCase {
 
-  protected String payGroupCode = "31";//支付组code
-
   @Autowired
   protected SinglePremiumScheduleService singlePremiumScheduleService;
 

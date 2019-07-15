@@ -1,8 +1,9 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.premium4551.youli;
 
 import com.woodpecker.entity.loandb.SinglePremiumScheduleEntity;
-import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
+import com.woodpecker.framework.pay.PayGroupPlatformEnum;
+import com.woodpecker.framework.pay.PayPlatformEnum;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.testcase.payment.repayment.treefinance.premium4551.Premium4551TestCase;
 import com.xujinjian.Commons.Lang.StringUtil;
@@ -24,9 +25,15 @@ import org.testng.annotations.Test;
  */
 public class YouLiPremiumJd007TC extends Premium4551TestCase {
 
-  String payPlatformCode = "42";//支付通道code
+  PayGroupPlatformEnum payGroupPlatformEnum = PayGroupPlatformEnum.JD007;
 
-  String channel = "102";//下游渠道号
+  PayPlatformEnum payPlatformEnum = payGroupPlatformEnum.getPayPlatformCode();
+
+  String payGroupCode = payGroupPlatformEnum.getPayGroupCode();//支付组code
+
+  String payPlatformCode = payPlatformEnum.getCode();//支付通道code
+
+  String channel = payPlatformEnum.getChannel();//下游渠道号
 
   PlatformIdEnum platformIdEnum = PlatformIdEnum.YLW;
 
@@ -45,11 +52,8 @@ public class YouLiPremiumJd007TC extends Premium4551TestCase {
     if (StringUtil.isEmpty(super.routerEnvVersion)) {
       super.routerEnvVersion = super.superdiamond.getRouterEnvVersion();
     }
-    //
-    PayPlatformEntity payPlatformEntity = payPlatformService
-        .getPayPlatform(payPlatformCode, super.routerEnvVersion);
     //mock京东(007-4551)
-    super.superdiamond.mockChannel(payPlatformEntity.getName());
+    super.superdiamond.mockChannel(payPlatformEnum.getName());
   }
 
 

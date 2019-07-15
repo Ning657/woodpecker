@@ -15,8 +15,6 @@ public class Stages4551TestCase extends RepaymentTestCase {
   @Autowired
   protected RepaymentScheduleService repaymentScheduleService;
 
-  protected String payGroupCode = "6";//支付组code
-
   protected byte stage = 2;//需要还款的期数
 
 

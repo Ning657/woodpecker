@@ -1,8 +1,9 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.capital.ssj;
 
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
-import com.woodpecker.entity.payment.PayPlatformEntity;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
+import com.woodpecker.framework.pay.PayGroupPlatformEnum;
+import com.woodpecker.framework.pay.PayPlatformEnum;
 import com.woodpecker.service.databuild.PlatformIdEnum;
 import com.woodpecker.testcase.payment.repayment.treefinance.capital.CapitalRepaymentTestCase;
 import com.xujinjian.Commons.Lang.StringUtil;
@@ -24,15 +25,19 @@ import org.testng.annotations.Test;
  */
 public class SsjCapitalTC extends CapitalRepaymentTestCase {
 
-  String payGroupCode = "20";//支付组code
+  PayGroupPlatformEnum payGroupPlatformEnum = PayGroupPlatformEnum.SSJ;
 
-  String payPlatformCode = "50";//支付通道code
+  PayPlatformEnum payPlatformEnum = payGroupPlatformEnum.getPayPlatformCode();
 
-  String channel = "50";//下游渠道号
+  String payGroupCode = payGroupPlatformEnum.getPayGroupCode();//支付组code
+
+  String payPlatformCode = payPlatformEnum.getCode();//支付通道code
+
+  String channel = payPlatformEnum.getChannel();//下游渠道号
 
   PlatformIdEnum platformIdEnum = PlatformIdEnum.SSJ;
 
-  String orderVersion = "4";//订单的version
+  String orderVersion = "2";//订单的version
 
   String orderId;
 
@@ -47,11 +52,8 @@ public class SsjCapitalTC extends CapitalRepaymentTestCase {
     if (StringUtil.isEmpty(super.routerEnvVersion)) {
       super.routerEnvVersion = super.superdiamond.getRouterEnvVersion();
     }
-    //
-    PayPlatformEntity payPlatformEntity = payPlatformService
-        .getPayPlatform(payPlatformCode, super.routerEnvVersion);
     //mock随手记
-    super.superdiamond.mockChannel(payPlatformEntity.getName());
+    super.superdiamond.mockChannel(payPlatformEnum.getName());
   }
 
 
