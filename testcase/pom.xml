@@ -22,8 +22,7 @@
 
 
   <dependencies>
-
-
+    
     <!-- service -->
     <dependency>
       <groupId>com.woodpecker</groupId>
@@ -31,7 +30,60 @@
     </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.14.3</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
+
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+
+      <!-- run mvn test -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <!-- 大树绑卡及资金方的鉴权 -->
+            <suiteXmlFile>case/绑卡/大树绑卡-TestCase.xml</suiteXmlFile>
+            <suiteXmlFile>case/绑卡/资金方鉴权-TestCase.xml</suiteXmlFile>
+
+            <!-- 分期还款 -> 走大树4551 -->
+            <suiteXmlFile>case/分期还款/大树/还未来期走大树4551-JD-TestCase.xml</suiteXmlFile>
+            <suiteXmlFile>case/分期还款/大树/还未来期走大树4551-通联-TestCase.xml</suiteXmlFile>
+
+            <!-- 趸交还款 -> 走大树4551 -->
+            <suiteXmlFile>case/趸交还款/大树/趸交走大树4551-JD-TestCase.xml</suiteXmlFile>
+            <suiteXmlFile>case/趸交还款/大树/趸交走大树4551-通联-TestCase.xml</suiteXmlFile>
+
+            <!-- 分期还款 -> 走资金方 -->
+            <suiteXmlFile>case/分期还款/资金方/当期还款走资金渠道体内还款-TestCase.xml</suiteXmlFile>
+
+            <!-- 分期还款 -> 走景宁5213 -->
+            <suiteXmlFile>case/分期还款/景宁/还未来期走景宁5213-JD-TestCase.xml</suiteXmlFile>
+            <suiteXmlFile>case/分期还款/景宁/还未来期走景宁5213-通联-TestCase.xml</suiteXmlFile>
+
+            <!-- 趸交还款 -> 走景宁5213 -->
+            <suiteXmlFile>case/趸交还款/景宁/趸交走景宁5213-JD-TestCase.xml</suiteXmlFile>
+            <suiteXmlFile>case/趸交还款/景宁/趸交走景宁5213-通联-TestCase.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 
 </project>
