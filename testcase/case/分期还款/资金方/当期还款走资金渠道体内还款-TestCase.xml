@@ -1,7 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="当期还款走资金渠道体内还款" verbose="1">
   <listeners>
-    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+    <listener class-name="com.sword.autotest.framework.listener.ITestListener"/>
+    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
   </listeners>
   <test name="当期还款走资金渠道体内还款">
     <classes>

@@ -1,7 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="趸交走中信4551" verbose="1">
   <listeners>
-    <!--<listener class-name="com.sword.autotest.framework.listener.ITestListener"></listener>-->
+    <listener class-name="com.sword.autotest.framework.listener.ITestListener"/>
+    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
   </listeners>
   <test name="趸交走中信4451-京东">
     <classes>
