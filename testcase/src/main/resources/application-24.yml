@@ -19,3 +19,15 @@ superdiamond:
     password: '000000'
 mq:
   host: http://mq.test.91gfd.cn
+spring:
+  redis:
+    host: 121.43.177.8
+    port: 6379
+    password: dashu0701
+    timeout: 1000     #连接超时时间（毫秒）
+    database: 0       #Redis数据库索引（默认为0）
+    pool:
+      max-active: 2   #连接池最大连接数（使用负值表示没有限制）
+      max-wait: 100    #连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-idle: 2     #连接池中的最大空闲连接
+      min-idle: 1     #连接池中的最小空闲连接
