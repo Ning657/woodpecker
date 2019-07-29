@@ -35,7 +35,7 @@ public class VerifyBindData {
    * @return void
    */
   public void verify(int bankAccountId, BindCardEnum[] bindCardEnums) {
-    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId);
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId).get();
     //先校验t_bank_account表
     bindCheckPointService.checkBankAccountTable(bankAccountEntity, bindCardEnums);
     //

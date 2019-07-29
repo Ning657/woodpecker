@@ -58,18 +58,12 @@ public class CollectionDepositProxyPayProcessor extends AbstractPayProcessor {
   @Override
   protected HttpResponse doPay(long id, BigDecimal amount) {
     //查询t_loan_order表
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById((int) id);
-    if (null == loanOrderEntity) {
-      logger.error("t_loan_order表不存在id=[{}]的记录", id);
-      return null;
-    }
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById((int) id).get();
+
     long bankAccountId = loanOrderEntity.getBankAccountId();
     //查询t_bank_account表
-    BankAccountEntity bankAccountEntity = bankAccountDao.findById((int) bankAccountId);
-    if (null == bankAccountEntity) {
-      logger.error("t_bank_account表不存在id=[{}]的记录", bankAccountId);
-      return null;
-    }
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById((int) bankAccountId).get();
+
     String account = bankAccountEntity.getAccount();
     //解密account
     String cardNo = dataAnalysisService.aesDecrypt(account);

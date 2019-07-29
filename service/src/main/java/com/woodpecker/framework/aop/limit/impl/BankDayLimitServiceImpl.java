@@ -60,9 +60,9 @@ public class BankDayLimitServiceImpl implements BankDayLimitService {
     if (0 == loanOrderId) {
       throw new TestCaseException("没有获取到loanOrderId");
     }
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId).get();
     Long bankAccountId = loanOrderEntity.getBankAccountId();
-    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue());
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue()).get();
     bankId = bankAccountEntity.getBankId();
     return bankId;
   }
@@ -80,12 +80,12 @@ public class BankDayLimitServiceImpl implements BankDayLimitService {
     int loanOrderId = 0;
     switch (scheduleType) {
       case REPAYMENT:
-        RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById(id);
+        RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById(id).get();
         loanOrderId = repaymentScheduleEntity.getLoanOrderId();
         break;
       case PREMIUM:
         SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-            .findById(id);
+            .findById(id).get();
         loanOrderId = singlePremiumScheduleEntity.getLoanOrderId();
         break;
       case LOAN_ORDER:
@@ -111,12 +111,12 @@ public class BankDayLimitServiceImpl implements BankDayLimitService {
     BigDecimal amount = null;
     switch (scheduleType) {
       case REPAYMENT:
-        RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById(id);
+        RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById(id).get();
         amount = repaymentScheduleEntity.getAmount();
         break;
       case PREMIUM:
         SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-            .findById(id);
+            .findById(id).get();
         amount = singlePremiumScheduleEntity.getAmount();
         break;
       default:

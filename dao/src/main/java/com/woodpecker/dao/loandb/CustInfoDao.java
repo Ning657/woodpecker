@@ -2,6 +2,7 @@ package com.woodpecker.dao.loandb;
 
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.CustInfoEntity;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface CustInfoDao extends JpaRepository<CustInfoEntity, Integer> {
 
-  CustInfoEntity findById(Integer id);
+  Optional<CustInfoEntity> findById(Integer id);
 
   CustInfoEntity findByUserName(String UserName);
 

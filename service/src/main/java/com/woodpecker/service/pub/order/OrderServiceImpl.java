@@ -52,14 +52,10 @@ public class OrderServiceImpl implements OrderService {
    */
   @Override
   public void clearLoanOrder(int loanOrderId) {
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
-    if (null == loanOrderEntity) {
-      logger.error("t_loan_order表不存在id=[{}]的记录", loanOrderId);
-    } else {
-      if (loanOrderEntity.getStatus().intValue() != 7) {
-        loanOrderEntity.setStatus((byte) 7);
-        loanOrderDao.saveAndFlush(loanOrderEntity);
-      }
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId).get();
+    if (loanOrderEntity.getStatus().intValue() != 7) {
+      loanOrderEntity.setStatus((byte) 7);
+      loanOrderDao.saveAndFlush(loanOrderEntity);
     }
   }
 
@@ -213,20 +209,11 @@ public class OrderServiceImpl implements OrderService {
    */
   @Override
   public String getCardNoByLoanOrderId(int loanOrderId) {
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
-    if (null == loanOrderEntity) {
-      logger.error("t_loan_order表不存在id=[{}]的记录", loanOrderId);
-    } else {
-      int bankAccountId = loanOrderEntity.getBankAccountId().intValue();
-      BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId);
-      if (null == bankAccountEntity) {
-        logger.error("t_bank_account表不存在id=[{}]的记录", bankAccountId);
-      } else {
-        String account = bankAccountEntity.getAccount();
-        return dataAnalysisService.aesDecrypt(account);
-      }
-    }
-    return "";
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId).get();
+    int bankAccountId = loanOrderEntity.getBankAccountId().intValue();
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId).get();
+    String account = bankAccountEntity.getAccount();
+    return dataAnalysisService.aesDecrypt(account);
   }
 
 
@@ -238,19 +225,10 @@ public class OrderServiceImpl implements OrderService {
    */
   @Override
   public int getBankIdByLoanOrderId(int loanOrderId) {
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
-    if (null == loanOrderEntity) {
-      logger.error("t_loan_order表不存在id=[{}]的记录", loanOrderId);
-    } else {
-      int bankAccountId = loanOrderEntity.getBankAccountId().intValue();
-      BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId);
-      if (null == bankAccountEntity) {
-        logger.error("t_bank_account表不存在id=[{}]的记录", bankAccountId);
-      } else {
-        return bankAccountEntity.getBankId();
-      }
-    }
-    return 0;
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId).get();
+    int bankAccountId = loanOrderEntity.getBankAccountId().intValue();
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId).get();
+    return bankAccountEntity.getBankId();
   }
 
 

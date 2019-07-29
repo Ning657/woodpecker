@@ -3,6 +3,7 @@ package com.woodpecker.dao.payment;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.payment.CardInfoEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface CardInfoDao extends JpaRepository<CardInfoEntity, Long> {
 
-  CardInfoEntity findById(Long id);
+  Optional<CardInfoEntity> findById(Long id);
 
   CardInfoEntity findByOrderNo(String orderNo);
 

@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.OrderRouteEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface OrderRouteDao extends JpaRepository<OrderRouteEntity, Integer> {
 
-  OrderRouteEntity findById(Integer id);
+  Optional<OrderRouteEntity> findById(Integer id);
 
   OrderRouteEntity findByOrderId(Integer orderId);
 

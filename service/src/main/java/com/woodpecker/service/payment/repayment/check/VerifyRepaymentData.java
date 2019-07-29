@@ -94,12 +94,12 @@ public class VerifyRepaymentData {
       case PREMIUM:
         //校验qs_single_premium_schedule表数据
         repaymentCheckPointService
-            .checkSinglePremiumScheduleTable(singlePremiumScheduleDao.findById(scheduleId));
+            .checkSinglePremiumScheduleTable(singlePremiumScheduleDao.findById(scheduleId).get());
         break;
       case REPAYMENT:
         //校验t_repayment_schedule表数据
         repaymentCheckPointService
-            .checkRepaymentScheduleTable(repaymentScheduleDao.findById(scheduleId));
+            .checkRepaymentScheduleTable(repaymentScheduleDao.findById(scheduleId).get());
         break;
       default:
         logger.error("还款后的数据库校验不支持[{}({})]", scheduleType.name(), scheduleType.getDesc());

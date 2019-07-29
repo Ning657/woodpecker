@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.SinglePremiumScheduleEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SinglePremiumScheduleDao extends
     JpaRepository<SinglePremiumScheduleEntity, Integer> {
 
-  SinglePremiumScheduleEntity findById(Integer id);
+  Optional<SinglePremiumScheduleEntity> findById(Integer id);
 
   SinglePremiumScheduleEntity findByLoanOrderId(Integer loanOrderId);
 

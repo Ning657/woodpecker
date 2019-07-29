@@ -175,14 +175,10 @@ public class AuthServiceImpl implements AuthService {
 
   private BankAccountEntity getBankAccountEntity(int loanOrderId) {
     //获取t_loan_order表的BankAccountId
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId);
-    if (null == loanOrderEntity) {
-      logger.error("t_loan_order表不存在id=[{}]的记录", loanOrderId);
-      return null;
-    }
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(loanOrderId).get();
     Long bankAccountId = loanOrderEntity.getBankAccountId();
     //判断是否已鉴权
-    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue());
+    BankAccountEntity bankAccountEntity = bankAccountDao.findById(bankAccountId.intValue()).get();
     return bankAccountEntity;
   }
 

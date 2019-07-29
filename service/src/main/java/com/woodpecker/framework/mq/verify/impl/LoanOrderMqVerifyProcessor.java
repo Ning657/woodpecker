@@ -48,11 +48,8 @@ public class LoanOrderMqVerifyProcessor extends AbstractMqVerifyProcessor {
     boolean isExist = false;
 
     String userId = null;
-    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(Integer.parseInt(id));
-    if (null == loanOrderEntity) {
-      logger.error("没有找到id=[{}]的t_loan_order记录", id);
-      return false;
-    }
+    LoanOrderEntity loanOrderEntity = loanOrderDao.findById(Integer.parseInt(id)).get();
+
     userId = String.valueOf(loanOrderEntity.getUserId());
 
     //先查询发出去的MQ列表，此列表包含MQ的id，但不包含MQ的消息内容

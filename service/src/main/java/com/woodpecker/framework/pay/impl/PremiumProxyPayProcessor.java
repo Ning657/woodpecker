@@ -50,11 +50,8 @@ public class PremiumProxyPayProcessor extends AbstractPayProcessor {
   protected HttpResponse doPay(long id, BigDecimal amount) {
     //获取趸交计划
     SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-        .findById((int) id);
-    if (null == singlePremiumScheduleEntity) {
-      logger.error("qs_single_premium_schedule表不存在id=[{}]的记录", id);
-      return null;
-    }
+        .findById((int) id).get();
+
     logger.debug("开始还款->{}", singlePremiumScheduleEntity.toString());
     //组装还款接口参数
     HashMap<String, String> data = new HashMap<>();

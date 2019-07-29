@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.BankAccountEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface BankAccountDao extends JpaRepository<BankAccountEntity, Integer> {
 
-  BankAccountEntity findById(Integer id);
+  Optional<BankAccountEntity> findById(Integer id);
 
   List<BankAccountEntity> findByUserId(Integer userId);
 

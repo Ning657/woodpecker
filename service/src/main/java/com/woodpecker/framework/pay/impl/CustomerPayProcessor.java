@@ -49,11 +49,8 @@ public class CustomerPayProcessor extends AbstractPayProcessor {
   @Override
   protected HttpResponse doPay(long id, BigDecimal amount) {
     //根据还款计划ID，查询userId
-    RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById((int) id);
-    if (null == repaymentScheduleEntity) {
-      logger.error("t_repayment_schedule表不存在id=[{}]的记录", id);
-      return null;
-    }
+    RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao.findById((int) id).get();
+
     logger.debug("开始还款->{}", repaymentScheduleEntity.toString());
     //组装还款接口参数
     HashMap<String, String> data = new HashMap<>();

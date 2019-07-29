@@ -3,6 +3,7 @@ package com.woodpecker.dao.payment;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.payment.PayChannelBankEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface PayChannelBankDao extends JpaRepository<PayChannelBankEntity, Integer> {
 
-  PayChannelBankEntity findById(Integer id);
+  Optional<PayChannelBankEntity> findById(Integer id);
 
   List<PayChannelBankEntity> findByCode(String code);
 

@@ -30,10 +30,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public CustInfoEntity getCustInfo(int userId) {
-    CustInfoEntity custInfoEntity = custInfoDao.findById(userId);
-    if (null == custInfoEntity) {
-      logger.error("t_cust_info表中不存在id=[{}]", userId);
-    }
+    CustInfoEntity custInfoEntity = custInfoDao.findById(userId).get();
     return custInfoEntity;
   }
 

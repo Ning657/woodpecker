@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.LoanOrderEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -18,6 +19,6 @@ public interface LoanOrderDao extends JpaRepository<LoanOrderEntity, Integer> {
 
   List<LoanOrderEntity> findByUserId(Integer userId);
 
-  LoanOrderEntity findById(Integer id);
+  Optional<LoanOrderEntity> findById(Integer id);
 
 }

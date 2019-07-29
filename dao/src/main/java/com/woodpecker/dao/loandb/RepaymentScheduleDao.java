@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 @Dao
 public interface RepaymentScheduleDao extends JpaRepository<RepaymentScheduleEntity, Integer> {
 
-  RepaymentScheduleEntity findById(Integer id);
+  Optional<RepaymentScheduleEntity> findById(Integer id);
 
   List<RepaymentScheduleEntity> findByLoanOrderId(Integer loanOrderId);
 

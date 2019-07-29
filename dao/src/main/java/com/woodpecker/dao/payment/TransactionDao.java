@@ -3,6 +3,7 @@ package com.woodpecker.dao.payment;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.payment.TransactionEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 @Dao
 public interface TransactionDao extends JpaRepository<TransactionEntity, Long> {
 
-  TransactionEntity findById(Long id);
+  Optional<TransactionEntity> findById(Long id);
 
   TransactionEntity findByOrderNo(String orderNo);
 

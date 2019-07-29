@@ -23,27 +23,15 @@
 
   <dependencies>
     <!-- sword - commons -->
-    <dependency>
-      <groupId>com.sword</groupId>
-      <artifactId>commons</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.sword</groupId>-->
+    <!--<artifactId>commons</artifactId>-->
+    <!--</dependency>-->
 
     <!-- sword - auto-test -->
     <dependency>
       <groupId>com.sword</groupId>
       <artifactId>auto-test</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
 

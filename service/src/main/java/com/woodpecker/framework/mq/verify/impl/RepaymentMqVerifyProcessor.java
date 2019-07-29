@@ -49,11 +49,8 @@ public class RepaymentMqVerifyProcessor extends AbstractMqVerifyProcessor {
 
     String userId = null;
     RepaymentScheduleEntity repaymentScheduleEntity = repaymentScheduleDao
-        .findById(Integer.parseInt(id));
-    if (null == repaymentScheduleEntity) {
-      logger.error("没有找到id=[{}]的t_repayment_schedule记录", id);
-      return false;
-    }
+        .findById(Integer.parseInt(id)).get();
+
     userId = String.valueOf(repaymentScheduleEntity.getUserId());
 
     //先查询发出去的MQ列表，此列表包含MQ的id，但不包含MQ的消息内容

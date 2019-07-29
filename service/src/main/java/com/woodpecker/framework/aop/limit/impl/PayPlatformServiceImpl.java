@@ -125,7 +125,9 @@ public class PayPlatformServiceImpl implements PayPlatformService {
   @Transactional(value = "paymentTransactionManager")
   @Override
   public void recoverPayPlatform(List<PayPlatformEntity> list) {
-    payPlatformDao.save(list);
+    for (PayPlatformEntity payPlatformEntity : list) {
+      payPlatformDao.save(payPlatformEntity);
+    }
   }
 
 

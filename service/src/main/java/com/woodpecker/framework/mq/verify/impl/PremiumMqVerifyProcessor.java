@@ -49,11 +49,8 @@ public class PremiumMqVerifyProcessor extends AbstractMqVerifyProcessor {
 
     String userId = null;
     SinglePremiumScheduleEntity singlePremiumScheduleEntity = singlePremiumScheduleDao
-        .findById(Integer.parseInt(id));
-    if (null == singlePremiumScheduleEntity) {
-      logger.error("没有找到id=[{}]的qs_single_premium_schedule记录", id);
-      return false;
-    }
+        .findById(Integer.parseInt(id)).get();
+
     userId = String.valueOf(singlePremiumScheduleEntity.getUserId());
 
     //先查询发出去的MQ列表，此列表包含MQ的id，但不包含MQ的消息内容

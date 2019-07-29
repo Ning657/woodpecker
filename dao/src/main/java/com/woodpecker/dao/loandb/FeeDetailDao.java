@@ -2,6 +2,7 @@ package com.woodpecker.dao.loandb;
 
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.FeeDetailEntity;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface FeeDetailDao extends JpaRepository<FeeDetailEntity, Integer> {
 
-  FeeDetailEntity findById(Integer id);
+  Optional<FeeDetailEntity> findById(Integer id);
 
   FeeDetailEntity findByRefTypeAndRefValue(String refType, String refValue);
 

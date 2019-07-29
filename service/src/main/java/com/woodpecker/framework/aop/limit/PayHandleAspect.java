@@ -464,10 +464,10 @@ public class PayHandleAspect {
         loanOrderId = id;
         break;
       case PREMIUM:
-        loanOrderId = singlePremiumScheduleDao.findById(id).getLoanOrderId();
+        loanOrderId = singlePremiumScheduleDao.findById(id).get().getLoanOrderId();
         break;
       case REPAYMENT:
-        loanOrderId = repaymentScheduleDao.findById(id).getLoanOrderId();
+        loanOrderId = repaymentScheduleDao.findById(id).get().getLoanOrderId();
         break;
       default:
         loanOrderId = 0;

@@ -3,6 +3,7 @@ package com.woodpecker.dao.loandb;
 import com.sword.autotest.framework.annotation.Dao;
 import com.woodpecker.entity.loandb.OrderOriginalEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Dao
 public interface OrderOriginalDao extends JpaRepository<OrderOriginalEntity, Integer> {
 
-  OrderOriginalEntity findById(Integer id);
+  Optional<OrderOriginalEntity> findById(Integer id);
 
   List<OrderOriginalEntity> findByUserId(Integer userId);
 

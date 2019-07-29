@@ -12,20 +12,50 @@ spring:
     show-sql: true
   datasource:
     auto-test-db:
-      url: jdbc:mysql://localhost:3306/autotest?characterEncoding=utf-8&useSSL=false
+      jdbc-url: jdbc:mysql://localhost:3306/autotest?characterEncoding=utf-8&useSSL=false
       username: root
       password: 123456
       driver-class-name: com.mysql.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        pool-name: auto-test-db
+        minimum-idle: 1
+        maximum-pool-size: 2
+        auto-commit: true
+        idle-timeout: 3000
+        max-lifetime: 1800000
+        connection-timeout: 30000
+        connection-test-query: SELECT 1
     loandb:
-      url: jdbc:mysql://121.43.177.8:3344/loandb?characterEncoding=utf-8&useSSL=false
+      jdbc-url: jdbc:mysql://121.43.177.8:3344/loandb?characterEncoding=utf-8&useSSL=false
       username: xujinjian
       password: T5QJttqB2m
       driver-class-name: com.mysql.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        pool-name: loandb
+        minimum-idle: 1
+        maximum-pool-size: 1
+        auto-commit: true
+        idle-timeout: 3000
+        max-lifetime: 1800000
+        connection-timeout: 30000
+        connection-test-query: SELECT 1
     payment-db:
-      url: jdbc:mysql://121.43.177.8:3344/payment?characterEncoding=utf-8&useSSL=false
+      jdbc-url: jdbc:mysql://121.43.177.8:3344/payment?characterEncoding=utf-8&useSSL=false
       username: xujinjian
       password: T5QJttqB2m
       driver-class-name: com.mysql.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        pool-name: payment-db
+        minimum-idle: 1
+        maximum-pool-size: 1
+        auto-commit: true
+        idle-timeout: 3000
+        max-lifetime: 1800000
+        connection-timeout: 30000
+        connection-test-query: SELECT 1
   output:
     ansi:
       enabled: always
