@@ -139,19 +139,5 @@
     </dependencies>
   </dependencyManagement>
 
-
-  <distributionManagement>
-    <repository>
-      <id>releases</id>
-      <name>Releases</name>
-      <url>http://49.234.223.213:8081/repository/maven-releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <name>Snapshot</name>
-      <url>http://49.234.223.213:8081/repository/maven-snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
-
-
+  
 </project>
