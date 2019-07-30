@@ -1,5 +1,6 @@
 package com.woodpecker.testcase;
 
+import com.sword.autotest.framework.listener.ITestListener;
 import com.sword.autotest.framework.testcase.BaseTestCase;
 import com.woodpecker.WoodpeckerApplication;
 import com.woodpecker.service.databuild.DataBuildOrderService;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.Listeners;
 
 
 /**
@@ -17,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author: xujinjian
  */
 @SpringBootTest(classes = {WoodpeckerApplication.class})
+@Listeners({ITestListener.class})
 public class TestCase extends BaseTestCase {
 
   protected Logger logger = LoggerFactory.getLogger(this.getClass());
