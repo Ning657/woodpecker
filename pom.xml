@@ -29,7 +29,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <!--  -->
-    <sword.version>2.1.0</sword.version>
+    <sword.version>2.1.0.releases</sword.version>
     <!--  -->
     <woodpecker.version>2.1.1</woodpecker.version>
     <!--  -->
@@ -138,6 +138,20 @@
 
     </dependencies>
   </dependencyManagement>
+
+
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <name>Releases</name>
+      <url>http://49.234.223.213:8081/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>Snapshot</name>
+      <url>http://49.234.223.213:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 
 </project>

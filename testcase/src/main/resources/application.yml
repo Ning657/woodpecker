@@ -2,7 +2,7 @@ spring:
   application:
     name: woodpecker
   profiles:
-      active: 24
+      active: 41
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
