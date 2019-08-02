@@ -17,7 +17,7 @@ public class MessageDTO implements Serializable {
 
   long userId;
 
-  byte rechargeType;
+  int rechargeType;
 
   long scheduleId;
 
@@ -46,11 +46,11 @@ public class MessageDTO implements Serializable {
     this.userId = userId;
   }
 
-  public byte getRechargeType() {
+  public int getRechargeType() {
     return rechargeType;
   }
 
-  public void setRechargeType(byte rechargeType) {
+  public void setRechargeType(int rechargeType) {
     this.rechargeType = rechargeType;
   }
 
