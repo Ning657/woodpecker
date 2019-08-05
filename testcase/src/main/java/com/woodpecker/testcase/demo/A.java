@@ -31,6 +31,11 @@ public class A extends TestCase {
     System.out.println("A BeforeSuite");
   }
 
+  @BeforeSuite
+  public void beforeSutie2() {
+    System.out.println("A BeforeSuite2");
+  }
+
   @BeforeTest
   public void beforeTest() {
     System.out.println("A BeforeTest");
