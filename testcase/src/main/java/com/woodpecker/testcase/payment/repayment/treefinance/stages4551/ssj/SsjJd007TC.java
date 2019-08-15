@@ -1,5 +1,6 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.ssj;
 
+import com.sword.autotest.framework.annotation.report.extent.Assign;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
 import com.woodpecker.framework.pay.PayGroupPlatformEnum;
@@ -71,6 +72,7 @@ public class SsjJd007TC extends Stages4551TestCase {
   /**
    * 用例说明：提前还未来期，走大树 --> 京东 ;注意点：之所以走京东，是因为用例步骤中禁用了通联；如果不禁用通联，则京东和通联都有可能走
    */
+  @Assign(category = "支付通道走42", level = 1, author = "徐金剑")
   @Test(description = "还款方式-->催收代扣", timeOut = 180000)
   public void collectionWithhold() {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);

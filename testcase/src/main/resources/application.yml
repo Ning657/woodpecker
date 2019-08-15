@@ -127,15 +127,27 @@ logging:
 #####################测试报告/结果配置#####################
 report:
   notice:
-    enable: false  #测试结束后，是否邮件通知
+    enable: true  #测试结束后，是否邮件通知
+    subject: 自动化测试报告  #邮件标题
+    content: 自动化测试完成，请查看测试报告  #邮件正文
+    time-format: yyyy-MM-dd HH:mm:ss  #邮件标题所带的日期格式
+    tomcat:
+      upload: true  #是否将测试报告上传到服务器的Tomcat的webapps目录下
+      hostname: 106.13.29.203 #服务器地址
+      user: dashu  #登录服务器的用户名
+      password: pass0701  #登录服务器的密码
+      path: /home/dashu/tomcat #tomcat在服务器上的目录
+      mode: '0755'  #所上传到服务器的报告的权限
+      url: http://106.13.29.203:8080  #tomcat访问url
+      date-format: yyyyMMdd #将测试报告按日期存放
     mail:
-      to: xujinjian@treefinance.com.cn  #需要邮件通知的人，多个收件人中间用;隔开
-      #cc: xxx@qq.com  #需要邮件通知的人，多个抄送人中间用;隔开
+      to: xujinjian@treefinance.com.cn;ningjieqiong@treefinance.com.cn;mengying@treefinance.com.cn;caoyan@treefinance.com.cn  #需要邮件通知的人，多个收件人/抄送人中间用;隔开
+      #cc: xxxxx@qq.com
   reportng:
     html:
       img:
-        hight: 100
-        width: 100
+        hight: 75
+        width: 75
 #####################MQ配置#####################
 rocketmq:
   ###producer

@@ -1,5 +1,6 @@
 package com.woodpecker.testcase.payment.repayment.treefinance.stages4551.youli;
 
+import com.sword.autotest.framework.annotation.report.extent.Assign;
 import com.woodpecker.entity.loandb.RepaymentScheduleEntity;
 import com.woodpecker.framework.mq.verify.ScheduleTypeEnum;
 import com.woodpecker.framework.pay.PayGroupPlatformEnum;
@@ -72,6 +73,7 @@ public class YouLiTongLianTC extends Stages4551TestCase {
   /**
    * 用例说明：提前还未来期，走大树 --> 通联 ;注意点：之所以走通联，是因为用例步骤中禁用了京东；如果不禁用京东，则京东和通联都有可能走
    */
+  @Assign(category = "支付通道走60", level = 1, author = "徐金剑")
   @Test(description = "还款方式-->催收充值", timeOut = 180000)
   public void collectionWithhold() {
     log.debug("orderId=[{}];loanOrderId=[{}]", orderId, loanOrderId);
