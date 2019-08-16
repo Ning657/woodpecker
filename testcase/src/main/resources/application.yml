@@ -101,7 +101,7 @@ autotest:
     redirectsEnabled: true  #是否允许自动重定向，默认true
   ui:
     driverPath: src/main/resources/driver/chromedriver
-    enable: true  #是否启用selenium
+    enable: false  #是否启用selenium
     driverType: Chrome  #浏览器类型
     pageLoadTimeout: 45  #页面加载超时时间(秒)
     elementLoadTimeout: 15  #元素加载超时时间(秒)
