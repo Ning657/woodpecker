@@ -1,8 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="大树绑卡" verbose="1">
   <listeners>
-    <listener class-name="com.sword.autotest.framework.listener.ITestListener"/>
-    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ExtentIReporterListener"/>-->
+    <!--<listener class-name="com.sword.autotest.framework.listener.BaseAutoTestITestListener"/>-->
   </listeners>
   <test name="京东绑卡、通联绑卡">
     <classes>

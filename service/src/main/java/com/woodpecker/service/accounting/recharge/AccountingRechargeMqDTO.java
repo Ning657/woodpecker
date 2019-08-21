@@ -1,5 +1,6 @@
 package com.woodpecker.service.accounting.recharge;
 
+import com.xujinjian.Json.JsonUtil;
 import java.io.Serializable;
 
 /**
@@ -14,11 +15,11 @@ public class AccountingRechargeMqDTO implements Serializable {
 
   String tag = "*";
 
-  MessageDTO message;
+  String message;
 
 
   public AccountingRechargeMqDTO(MessageDTO message) {
-    this.message = message;
+    this.message = JsonUtil.toJSONString(message);
   }
 
   public String getTopic() {
@@ -37,11 +38,11 @@ public class AccountingRechargeMqDTO implements Serializable {
     this.tag = tag;
   }
 
-  public MessageDTO getMessage() {
+  public String getMessage() {
     return message;
   }
 
-  public void setMessage(MessageDTO message) {
+  public void setMessage(String message) {
     this.message = message;
   }
 }

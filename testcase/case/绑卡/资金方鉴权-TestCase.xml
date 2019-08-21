@@ -1,8 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="资金方鉴权" verbose="1">
   <listeners>
-    <listener class-name="com.sword.autotest.framework.listener.ITestListener"/>
-    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+    <!--<listener class-name="com.sword.autotest.framework.listener.ExtentIReporterListener"/>-->
+    <!--<listener class-name="com.sword.autotest.framework.listener.BaseAutoTestITestListener"/>-->
   </listeners>
   <test name="资金方鉴权">
     <classes>

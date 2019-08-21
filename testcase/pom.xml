@@ -19,9 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <argLine>-Dfile.encoding=UTF-8</argLine>
 
-    <allure.version>2.12.1</allure.version>
-    <!--<aspectj.version>1.9.4</aspectj.version>-->
-    <aspectj.version>1.8.10</aspectj.version>
+
   </properties>
 
 
@@ -32,40 +30,6 @@
       <groupId>com.woodpecker</groupId>
       <artifactId>service</artifactId>
     </dependency>
-
-
-    <!-- https://mvnrepository.com/artifact/org.testng/testng -->
-    <!--<dependency>-->
-    <!--<groupId>org.testng</groupId>-->
-    <!--<artifactId>testng</artifactId>-->
-    <!--<version>6.14.3</version>-->
-    <!--<scope>test</scope>-->
-    <!--</dependency>-->
-
-
-    <!--<dependency>-->
-    <!--<groupId>io.qameta.allure</groupId>-->
-    <!--<artifactId>allure-testng</artifactId>-->
-    <!--<version>${allure.version}</version>-->
-    <!--<scope>test</scope>-->
-    <!--</dependency>-->
-
-    <!-- https://mvnrepository.com/artifact/org.testng/testng -->
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.14.3</version>
-      <!--<scope>test</scope>-->
-    </dependency>
-
-
-    <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <version>3.14.0</version>
-    </dependency>
-
 
   </dependencies>
 
@@ -85,9 +49,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
         <configuration>
-          <!--<argLine>-->
-          <!-- -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"-->
-          <!--</argLine>-->
 
           <suiteXmlFiles>
             <!-- 大树绑卡及资金方的鉴权 -->
@@ -96,7 +57,7 @@
 
             <!-- 分期还款 -> 走大树4551 -->
             <suiteXmlFile>case/分期还款/大树/还未来期走大树4551-JD-TestCase.xml</suiteXmlFile>
-            <!--<suiteXmlFile>case/分期还款/大树/还未来期走大树4551-通联-TestCase.xml</suiteXmlFile>-->
+            <suiteXmlFile>case/分期还款/大树/还未来期走大树4551-通联-TestCase.xml</suiteXmlFile>
 
             <!-- 趸交还款 -> 走大树4551 -->
             <!--<suiteXmlFile>case/趸交还款/大树/趸交走大树4551-JD-TestCase.xml</suiteXmlFile>-->
@@ -115,13 +76,6 @@
           </suiteXmlFiles>
         </configuration>
 
-        <!--<dependencies>-->
-        <!--<dependency>-->
-        <!--<groupId>org.aspectj</groupId>-->
-        <!--<artifactId>aspectjweaver</artifactId>-->
-        <!--<version>${aspectj.version}</version>-->
-        <!--</dependency>-->
-        <!--</dependencies>-->
 
       </plugin>
 
